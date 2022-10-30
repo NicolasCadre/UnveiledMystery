@@ -1,0 +1,6 @@
+displayName = Unveiled Mystery
+author = Snopingas
+version = 0.1
+modReferences = StructureHelper
+sortAfter = StructureHelper
+hideResources = true

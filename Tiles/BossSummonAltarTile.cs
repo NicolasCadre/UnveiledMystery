@@ -19,7 +19,7 @@ namespace UnveiledMystery.Tiles
 
         public override void SetStaticDefaults()
         {
-            Main.tileSolid[Type] = true;
+            Main.tileSolid[Type] = false;
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = false;
             Main.tileLighted[Type] = true;

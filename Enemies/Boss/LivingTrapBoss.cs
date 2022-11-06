@@ -145,7 +145,7 @@ namespace UnveiledMystery.Enemies.Boss
                     LaserChargingFlickeringTimerMax = MathHelper.Lerp(Main.expertMode ? 40f : 50f, 10f, Main.expertMode ? NPC.ai[1] / (LaserTimerStart + 50f) : NPC.ai[1] / (LaserTimerStart + 100f));
                     frameGlowmaskMouth = frameGlowmaskMouth == 0 ? 1 : 0;
                     if (frameGlowmaskMouth == 0)
-                        SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/LivingTrapBossLaser")
+                        SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Boss/LivingTrapBossLaser")
                         {
                             Volume = 0.5f,
                             Pitch = MathHelper.Lerp(-1f, 1f, Main.expertMode ? NPC.ai[1] / (LaserTimerStart + 150f) : NPC.ai[1] / (LaserTimerStart + 210f))
@@ -165,7 +165,7 @@ namespace UnveiledMystery.Enemies.Boss
             // Visual Attack Sign
             else if ((double)NPC.ai[0] >= ProjectileAttackTimer && (double)NPC.ai[0] < ProjectileAttackTimer + 120)
             {
-                SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/LivingTrapBossProjectile")
+                SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Boss/LivingTrapBossProjectile")
                 {
                     MaxInstances = 1,
                     SoundLimitBehavior = SoundLimitBehavior.IgnoreNew
@@ -284,7 +284,7 @@ namespace UnveiledMystery.Enemies.Boss
                     LaserChargingFlickeringTimerMax = MathHelper.Lerp(Main.expertMode ? 40f : 50f, 10f, Main.expertMode ? NPC.ai[0] / 240f : NPC.ai[0] / 300f);
                     frameGlowmaskMouth = frameGlowmaskMouth == 0 ? 1 : 0;
                     if (frameGlowmaskMouth == 0)
-                        SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/LivingTrapBossLaser")
+                        SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Boss/LivingTrapBossLaser")
                         {
                             Volume = 0.5f,
                             Pitch = MathHelper.Lerp(-1f, 1f, Main.expertMode ? NPC.ai[0] / 300f : NPC.ai[0] / 360f)

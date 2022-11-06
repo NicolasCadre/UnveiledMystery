@@ -12,7 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Structure\" />
-    <Folder Include="Sounds\" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="StructureHelper">

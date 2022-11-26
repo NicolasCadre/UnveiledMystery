@@ -17,9 +17,11 @@ namespace UnveiledMystery
             progress.Message = "Add a strange ruin";
             Mod mod = ModLoader.GetMod("UnveiledMystery");
 
+            int i = WorldGen.genRand.Next(100, Main.maxTilesX - 100);
+            int j = WorldGen.genRand.Next((int)WorldGen.worldSurface+200, Main.maxTilesY - 300);
+            StructureHelper.Generator.GenerateStructure("Structure/BossArena", new Point16(i, j), mod);
 
-
-            for(int number = 0; number <= 50; number++)
+           /* for (int number = 0; number <= 50; number++)
             {
                 int i = WorldGen.genRand.Next(100, Main.maxTilesX - 100);
                 int j = WorldGen.genRand.Next(0, Main.maxTilesY - 800);
@@ -43,7 +45,7 @@ namespace UnveiledMystery
                     }
 
                 }
-            }
+            }*/
         }
 
     }

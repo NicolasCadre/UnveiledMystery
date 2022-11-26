@@ -6,6 +6,9 @@ using System;
 using Terraria.Audio;
 using System.Collections.Generic;
 using Terraria.ID;
+using System.IO;
+using Terraria.Chat;
+using Terraria.Localization;
 
 namespace UnveiledMystery.Enemies.Boss
 {
@@ -23,12 +26,14 @@ namespace UnveiledMystery.Enemies.Boss
         private bool doOnce = false;
         private NPC Head;
         private LivingTrapBoss HeadScript;
-        private List<NPC> Stalactites = new List<NPC>();
+        public List<NPC> Stalactites = new List<NPC>();
         private float originalRotation;
-        private List<StalactiteNPC> StalactitesScript = new List<StalactiteNPC>();
+        public List<StalactiteNPC> StalactitesScript = new List<StalactiteNPC>();
         bool walkingStep = false;
         bool changeStep = false;
-
+        List<Player> PlayersInArena = new List<Player>();
+        Player choosenPlayer = null;
+        int[] StalactiteX = new int[5]; 
 
         public override void SetStaticDefaults()
         {
@@ -61,7 +66,7 @@ namespace UnveiledMystery.Enemies.Boss
         }
 
         // Phase 1
-        private void PatternFirstPhase(Vector2 target, Vector2 startPosition)
+        private void PatternFirstPhase(Vector2 startPosition)
         {
 
             timerAttackStart++;
@@ -74,7 +79,7 @@ namespace UnveiledMystery.Enemies.Boss
                     SoundEngine.PlaySound(SoundID.Item13);
                     timerBeforeSmash++;
                     NPC.ai[1] = timerBeforeSmash;
-                    float playerHeight = target.Y;
+                    float playerHeight = Main.player[choosenPlayer.whoAmI].position.Y;
                     Vector2 moveTo = new Vector2(Head.Center.X - 100, playerHeight);
                     Vector2 move = moveTo - NPC.Center;
                     float speed = MathHelper.Lerp(2, 5, Vector2.Distance(new Vector2(NPC.Center.X, playerHeight), NPC.Center) / 200);
@@ -106,7 +111,8 @@ namespace UnveiledMystery.Enemies.Boss
                         StalactitesScript.Clear();
                         NPC.velocity = new Vector2(0, 0);
                         hasChangedAttackTimer = false;
-                        HeadScript.player.GetModPlayer<CameraManager>().Shake(20, 50f);
+                        foreach(Player p in PlayersInArena)
+                            p.GetModPlayer<CameraManager>().Shake(20, 50f);
                         for (int i = 0; i <= 10; i++)
                             Dust.NewDust(NPC.Center - new Vector2(50, 0), 10, 70, 1);
                         stalactiteCooldown = 0;
@@ -129,7 +135,7 @@ namespace UnveiledMystery.Enemies.Boss
         }
 
         // Phase 2
-        private void PatternSecondPhase(Vector2 target, Vector2 startPosition)
+        private void PatternSecondPhase(Vector2 startPosition)
         {
             // Despawn the Stalactites on Phase Transition
             if (!HeadScript.hasFinishedPhaseTransition)
@@ -162,8 +168,8 @@ namespace UnveiledMystery.Enemies.Boss
                         for (int i = 0; i <= flameNumber; i++)
                             Dust.NewDust(NPC.position + new Vector2(NPC.width - 5, 10), 0, 50, 6, 10);
 
-                        float playerX = target.X;
-                        Vector2 moveTo = new Vector2(playerX, target.Y - 300f);
+                        float playerX = Main.player[choosenPlayer.whoAmI].position.X;
+                        Vector2 moveTo = new Vector2(playerX, Main.player[choosenPlayer.whoAmI].position.Y - 300f);
                         Vector2 move = moveTo - NPC.Center;
                         float speed = MathHelper.Lerp(2, 5, Vector2.Distance(new Vector2(playerX, NPC.Center.Y), NPC.Center) / 200);
                         float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
@@ -190,7 +196,8 @@ namespace UnveiledMystery.Enemies.Boss
                             if (NPC.ai[2] == 0)
                             {
                                 SoundEngine.PlaySound(SoundID.Item70);
-                                HeadScript.player.GetModPlayer<CameraManager>().Shake(20, 50f);
+                                foreach (Player p in PlayersInArena)
+                                    p.GetModPlayer<CameraManager>().Shake(20, 50f);
                                 for (int i = 0; i <= 20; i++)
                                     Dust.NewDust(NPC.Center - new Vector2(0, 0), 250, 0, 1);
                             }
@@ -252,12 +259,33 @@ namespace UnveiledMystery.Enemies.Boss
         }
 
         // Place 3 stalactites
-        private void GenerateNewStalactites()
+        /*rivate void GenerateNewStalactites()
         {
             for (int i = 0; i <= maxStalactite - 1; ++i)
             {
-                NPC.NewNPC(NPC.GetSource_FromAI(), Main.rand.Next((int)Head.position.X - 650, (int)Head.position.X - 50), (int)Head.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
-                NPC.netUpdate = true;
+                if (Main.netMode != NetmodeID.MultiplayerClient)
+                {
+                    ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Hey1"), Color.White);
+
+                    StalactiteX[i] = Main.rand.Next((int)Head.position.X - 650, (int)Head.position.X - 50);
+                    NPC.netUpdate = true;
+                }
+            }
+            for (int i = 0; i <= maxStalactite - 1; ++i)
+            {
+
+                if (Main.netMode != NetmodeID.MultiplayerClient && Main.netMode != NetmodeID.SinglePlayer)
+                {
+                    ModPacket myPacket = Mod.GetPacket();
+                    myPacket.Write((byte)UnveiledMystery.MessageType.SpawnNPCByNPC);
+                    myPacket.Write((byte)NPC.whoAmI);
+                    myPacket.Write ((int)StalactiteX[i]);
+                    myPacket.Write((int)Head.position.Y + 40);
+                    myPacket.Write((int)ModContent.NPCType<StalactiteNPC>());
+                    myPacket.Send();
+                }
+                else
+                    NPC.NewNPC(NPC.GetSource_FromAI(), StalactiteX[i], (int)Head.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
             }
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -279,15 +307,38 @@ namespace UnveiledMystery.Enemies.Boss
                 {
                     if (Stalactites.Any(npc => Vector2.Distance(npc.position, stalactite.position) <= 20 && npc != stalactite))
                     {
+                        int indexStalactiteX = Stalactites.IndexOf(stalactite);
                         stalactite.life = 0;
                         stalactite.checkDead();
                         stalactite.active = false;
                         Stalactites.Remove(stalactite);
                         StalactitesScript.Remove((StalactiteNPC)stalactite.ModNPC);
-                        int replacedStalactite = NPC.NewNPC(NPC.GetSource_FromAI(), Main.rand.Next((int)Head.position.X - 650, (int)Head.position.X - 50), (int)Head.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
-                        Stalactites.Add(Main.npc[replacedStalactite]);
-                        StalactitesScript.Add((StalactiteNPC)Main.npc[replacedStalactite].ModNPC);
-                        NPC.netUpdate = true;
+                        int replacedStalactite;
+
+                        if (Main.netMode != NetmodeID.MultiplayerClient)
+                        {
+                            StalactiteX[indexStalactiteX] = Main.rand.Next((int)Head.position.X - 650, (int)Head.position.X - 50);
+                            NPC.netUpdate = true;
+
+                        }
+                        /*if (Main.netMode != NetmodeID.MultiplayerClient && Main.netMode != NetmodeID.SinglePlayer)
+                        {
+
+                            NPC.netUpdate = true;
+                            ModPacket myPacket = Mod.GetPacket();
+                            myPacket.Write((byte)UnveiledMystery.MessageType.ReplaceStalactite);
+                            myPacket.Write((byte)NPC.whoAmI);
+                            myPacket.Write((int)StalactiteX[indexStalactiteX]);
+                            myPacket.Write((int)Head.position.Y + 40);
+                            myPacket.Write((int)ModContent.NPCType<StalactiteNPC>());
+                            myPacket.Send();
+                        }
+                        else
+                        {
+                            replacedStalactite = NPC.NewNPC(NPC.GetSource_FromAI(), StalactiteX[indexStalactiteX], (int)Head.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
+                            Stalactites.Add(Main.npc[replacedStalactite]);
+                            StalactitesScript.Add((StalactiteNPC)Main.npc[replacedStalactite].ModNPC);
+                        }
                         continue;
 
                     }
@@ -302,7 +353,7 @@ namespace UnveiledMystery.Enemies.Boss
                     hasGeneratedStalactite = true;
             }
 
-        }
+        }*/
         public override void AI()
         {
             // Link itself to the Boss' Head
@@ -312,17 +363,25 @@ namespace UnveiledMystery.Enemies.Boss
                 Head = Main.npc.FirstOrDefault(x => x.active && x.type == ModContent.NPCType<LivingTrapBoss>());
                 HeadScript = (LivingTrapBoss)Head.ModNPC;
                 doOnce = true;
-                GenerateNewStalactites();
+                //GenerateNewStalactites();
             }
 
-            if (!hasGeneratedStalactite)
-                GenerateNewStalactites();
+            //if (!hasGeneratedStalactite)
+                //GenerateNewStalactites();
 
             if (!hasChangedAttackTimer)
             {
                 timerAttackStart = 0;
                 timerBeforeSmash = 0;
                 hasChangedAttackTimer = true;
+                PlayersInArena = LivingTrapBossArenaProtector.CheckArenaPlayer();
+                if (PlayersInArena.Count != 0)
+                {
+                    if (PlayersInArena.Count == 1)
+                        choosenPlayer = Main.player[NPC.target];
+                    else
+                        choosenPlayer = PlayersInArena[Main.rand.Next(0, PlayersInArena.Count)];
+                }
             }
             Vector2 startPosition = new Vector2(Head.position.X + Head.width - NPC.width / 2, Head.position.Y + Head.height - NPC.height / 2);
 
@@ -333,16 +392,47 @@ namespace UnveiledMystery.Enemies.Boss
                 NPC.checkDead();
                 NPC.active = false;
             }
-            NPC.TargetClosest(true);
-            Player player = Main.player[NPC.target];
-            Vector2 target = NPC.HasPlayerTarget ? player.Center : Main.npc[NPC.target].Center;
 
             if (Head.life > Head.lifeMax / 2 && !HeadScript.hasStartedPhaseTransition && !HeadScript.hasFinishedPhaseTransition)
-                PatternFirstPhase(target, startPosition);
+                PatternFirstPhase(startPosition);
             else
-                PatternSecondPhase(target, startPosition);
+                PatternSecondPhase(startPosition);
+        }
+        /*public override void SendExtraAI(BinaryWriter binaryWriter)
+        {
+            if(maxStalactite == 3)
+            {
+                binaryWriter.Write(StalactiteX[0]);
+                binaryWriter.Write(StalactiteX[1]);
+                binaryWriter.Write(StalactiteX[2]);
+            }
+            else if (maxStalactite == 5)
+            {
+                binaryWriter.Write(StalactiteX[0]);
+                binaryWriter.Write(StalactiteX[1]);
+                binaryWriter.Write(StalactiteX[2]);
+                binaryWriter.Write(StalactiteX[3]);
+                binaryWriter.Write(StalactiteX[4]);
+            }
         }
 
+        public override void ReceiveExtraAI(BinaryReader binaryReader)
+        {
+            if (maxStalactite == 3)
+            {
+                StalactiteX[0] = binaryReader.Read();
+                StalactiteX[1] = binaryReader.Read();
+                StalactiteX[2] = binaryReader.Read();
+            }
+            else if (maxStalactite == 5)
+            {
+                StalactiteX[0] = binaryReader.Read();
+                StalactiteX[1] = binaryReader.Read();
+                StalactiteX[2] = binaryReader.Read();
+                StalactiteX[3] = binaryReader.Read();
+                StalactiteX[4] = binaryReader.Read();
+            }
+        }*/
         public override void DrawBehind(int index)
         {
             Main.instance.DrawCacheNPCProjectiles.Add(index);

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace UnveiledMystery.Enemies.Boss
 {
-    internal class StalactiteNPC : ModNPC
+    public class StalactiteNPC : ModNPC
     {
         private bool doOnce = false;
         private NPC Head;

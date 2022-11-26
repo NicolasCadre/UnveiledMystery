@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
@@ -11,6 +12,9 @@ using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ObjectData;
 using UnveiledMystery.Enemies.Boss;
+using Terraria.Chat;
+using System.Reflection;
+using NVorbis.Contracts;
 
 namespace UnveiledMystery.Tiles
 {
@@ -74,7 +78,21 @@ namespace UnveiledMystery.Tiles
                 return true;
 
             }
-            NPC.NewNPC(player.GetSource_FromAI(), (int)BossLocation.X, (int)BossLocation.Y, ModContent.NPCType<LivingTrapBoss>());
+            //int index = NPC.NewNPC(player.GetSource_FromAI(), (int)BossLocation.X, (int)BossLocation.Y, ModContent.NPCType<LivingTrapBoss>());
+            if (Main.netMode == 0)
+                NPC.NewNPC(player.GetSource_FromAI(), (int)BossLocation.X, (int)BossLocation.Y, ModContent.NPCType<LivingTrapBoss>());
+            else
+            {
+                ModPacket myPacket = Mod.GetPacket();
+
+                myPacket.Write((byte)UnveiledMystery.MessageType.SpawnNPCByPlayer);
+                myPacket.Write((int)BossLocation.X);
+                myPacket.Write((int)BossLocation.Y);
+                myPacket.Write((int)ModContent.NPCType<LivingTrapBoss>());
+                myPacket.Send();
+            }
+
+
             return true;
         }
 

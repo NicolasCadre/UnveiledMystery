@@ -52,13 +52,10 @@ namespace UnveiledMystery.Items.Weapons
 
         public override bool? UseItem(Player player)
         {
-            if (player.whoAmI == Main.myPlayer)
-            {
-                effect = (RandomEffect)Main.rand.Next(1, 10);
-                while(effect == previousEffect)
-                    effect = (RandomEffect)Main.rand.Next(1, 10);
 
-            }
+            effect = (RandomEffect)Main.rand.Next(1, 10);
+            while (effect == previousEffect)
+                effect = (RandomEffect)Main.rand.Next(1, 10);
             switch (effect)
             {
                 case RandomEffect.ONFIRE:

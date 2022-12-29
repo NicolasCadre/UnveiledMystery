@@ -9,6 +9,8 @@ using Terraria.ModLoader;
 using ReLogic.Content;
 using Terraria.Enums;
 using static Terraria.ModLoader.ModContent;
+using Terraria.DataStructures;
+
 using UnveiledMystery.Enemies.Boss;
 
 // Use similar code than BossLaser
@@ -20,7 +22,10 @@ namespace UnveiledMystery.Projectiles
         NPC owner;
 
         // The maximum charge value
-        private float maxCharge = Main.expertMode ? 300f : 360f;
+        private float maxCharge = Main.expertMode ? 200f : 260f;
+
+        private float maxShoot = Main.expertMode ? 180f : 240f;
+
         //The distance charge particle from the player center
         private const float LASER_MAXDISTANCE = 0f;
 
@@ -31,6 +36,7 @@ namespace UnveiledMystery.Projectiles
 
         private Vector2 startPos;
 
+        private bool doOnce = false;
 
         public float Distance
         {
@@ -38,10 +44,26 @@ namespace UnveiledMystery.Projectiles
             set => Projectile.ai[0] = value;
         }
 
+        public float PosProjectile
+        {
+            get => Projectile.ai[1];
+            set => Projectile.ai[1] = value;
+        }
+        public int ChosenPlayer
+        {
+            get => (int)Projectile.ai[2];
+            set => Projectile.ai[2] = value;
+        }
+
         public float Charge
         {
             get => Projectile.localAI[0];
             set => Projectile.localAI[0] = value;
+        }
+        public float TimerShootProjectiles
+        {
+            get => Projectile.localAI[1];
+            set => Projectile.localAI[1] = value;
         }
 
         public bool IsAtMaxCharge => Charge >= maxCharge;
@@ -53,7 +75,7 @@ namespace UnveiledMystery.Projectiles
             Projectile.hostile = false;
 
             Projectile.width = 10;
-            Projectile.height = 100;
+            Projectile.height = 20;
             Projectile.penetrate = -1;
             Projectile.tileCollide = false;
             Projectile.hide = false;
@@ -88,16 +110,16 @@ namespace UnveiledMystery.Projectiles
                 Color c = Color.White;
                 var origin = start + i * unit;
                 spriteBatch.Draw(texture, origin - Main.screenPosition,
-                    new Rectangle(0, 26, 620, 26), i < transDist ? Color.Transparent : c, r, new Vector2(620 * .5f, 26), scale, 0, 0);
+                    new Rectangle(0, 26, 205, 26), i < transDist ? Color.Transparent : c, r, new Vector2(205 * .5f, 26), scale, 0, 0);
             }
 
             // Draws the laser 'tail'
             spriteBatch.Draw(texture, start + unit * (transDist - step) - Main.screenPosition,
-                new Rectangle(0, 0, 620, 26), Color.White, r, new Vector2(620 * .5f, 26), scale, 0, 0);
+                new Rectangle(0, 0, 205, 26), Color.White, r, new Vector2(205 * .5f, 26), scale, 0, 0);
 
             // Draws the laser 'head'
             spriteBatch.Draw(texture, start + (Distance + step) * unit - Main.screenPosition,
-                new Rectangle(0, 52, 620, 26), Color.White, r, new Vector2(620 * .5f, 26), scale, 0, 0);
+                new Rectangle(0, 52, 205, 26), Color.White, r, new Vector2(205 * .5f, 26), scale, 0, 0);
         }
 
         public void DrawWarning(SpriteBatch spriteBatch, Texture2D texture, Vector2 start, Vector2 unit, float step, int damage, float rotation = 0f, float scale = 1f, float maxDist = 2000f, Color color = default(Color), int transDist = 50)
@@ -111,20 +133,20 @@ namespace UnveiledMystery.Projectiles
                 if (i % 2 == 0 || i % 2 == 1)
                 {
                     if (warningSprite == 1)
-                        rect = new Rectangle(0, 0, 620, 30);
+                        rect = new Rectangle(0, 0, 205, 30);
                     else
-                        rect = new Rectangle(0, 32, 620, 30);
+                        rect = new Rectangle(0, 32, 205, 30);
                 }
                 else
                 {
                     if (warningSprite == 1)
-                        rect = new Rectangle(0, 32, 620, 30);
+                        rect = new Rectangle(0, 32, 205, 30);
                     else
-                        rect = new Rectangle(0, 0, 620, 30);
+                        rect = new Rectangle(0, 0, 205, 30);
                 }
 
                 spriteBatch.Draw(texture, origin - Main.screenPosition,
-                    rect, c, r, new Vector2(620 * .5f, 30), scale, 0, 0);
+                    rect, c, r, new Vector2(205 * .5f, 30), scale, 0, 0);
             }
 
         }
@@ -136,7 +158,7 @@ namespace UnveiledMystery.Projectiles
             float point = 0f;
 
             return Collision.CheckAABBvLineCollision(targetHitbox.TopLeft(), targetHitbox.Size(), owner.Center - new Vector2(50, -145),
-                owner.Center - new Vector2(50, -150) + unit * Distance, 430, ref point);
+                owner.Center - new Vector2(50, -150) + unit * Distance, 145, ref point);
         }
 
         // Set custom immunity time on hitting an NPC
@@ -164,7 +186,7 @@ namespace UnveiledMystery.Projectiles
             startPos = owner.Center - new Vector2(50, -145);
 
             Projectile.position = startPos + Projectile.velocity * LASER_MAXDISTANCE;
-            Projectile.timeLeft = 500;
+            //Projectile.timeLeft = 500;
             timerWarningSpriteChange++;
             if (timerWarningSpriteChange >= 50)
             {
@@ -180,17 +202,39 @@ namespace UnveiledMystery.Projectiles
             if (Charge < maxCharge) return;
 
             // After Laser is charged
-
             Projectile.hostile = true;
+            ShootProjectiles();
             SpawnDusts(owner);
             CastLights();
-            SoundEngine.PlaySound(SoundID.Zombie104 with { MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.IgnoreNew });
+            if(!doOnce)
+            {
+                SoundEngine.PlaySound(SoundID.Zombie104 with { MaxInstances = 1, SoundLimitBehavior = SoundLimitBehavior.IgnoreNew });
+                doOnce = true;
+            }
 
 
-            if (Charge > maxCharge + 50f)
+            if (owner.active == false)
                 Projectile.Kill();
         }
 
+        // Regularly Shoot projectiles upward from the laser
+        private void ShootProjectiles()
+        {
+            TimerShootProjectiles++;
+            if (TimerShootProjectiles >= maxShoot)
+            {
+                if (Main.netMode == NetmodeID.SinglePlayer)
+                    PosProjectile = Main.rand.NextFloat((float)Main.LocalPlayer.position.X - 200, (float)Main.LocalPlayer.position.X + 200);
+                else
+                {
+                    ChosenPlayer = LivingTrapBossArenaProtector.PlayersInArena[Main.rand.Next(0, LivingTrapBossArenaProtector.PlayersInArena.Count - 1)].whoAmI;
+                    PosProjectile = Main.rand.NextFloat((float)Main.player[ChosenPlayer].position.X - 100, (float)Main.player[ChosenPlayer].position.X + 100);
+                }
+
+                Projectile.NewProjectile(Projectile.GetSource_FromThis(), PosProjectile, Projectile.Center.Y-Projectile.height-100, 0, 0, ModContent.ProjectileType<BossProjectileFromLaserWarning>(), 0, 0f);
+                TimerShootProjectiles = 0;
+            }
+        }
         private void SpawnDusts(NPC owner)
         {
             Vector2 unit = Projectile.velocity * -1;
@@ -198,7 +242,7 @@ namespace UnveiledMystery.Projectiles
 
             for (int i = 0; i < 2; ++i)
             {
-                Vector2 HeightPos = dustPos + new Vector2(0, Main.rand.Next(-330, 330));
+                Vector2 HeightPos = dustPos + new Vector2(0, Main.rand.Next(-52, 52));
                 float num1 = Projectile.velocity.ToRotation() + (Main.rand.Next(2) == 1 ? -1.0f : 1.0f) * 1.57f;
                 float num2 = (float)(Main.rand.NextDouble() * 0.8f + 1.0f);
                 Vector2 dustVel = new Vector2((float)Math.Cos(num1) * num2, (float)Math.Sin(num1) * num2);
@@ -215,7 +259,7 @@ namespace UnveiledMystery.Projectiles
 
             if (Main.rand.NextBool(5))
             {
-                Vector2 HeightPos = dustPos + new Vector2(0, Main.rand.Next(-330, 330));
+                Vector2 HeightPos = dustPos + new Vector2(0, Main.rand.Next(-52, 52));
 
                 Vector2 offset = Projectile.velocity.RotatedBy(1.57f) * ((float)Main.rand.NextDouble() - 0.5f) * Projectile.width;
                 Dust dust = Main.dust[Dust.NewDust(HeightPos + offset - Vector2.One * 4f, 8, 8, 31, 0.0f, 0.0f, 100, new Color(), 1.5f)];

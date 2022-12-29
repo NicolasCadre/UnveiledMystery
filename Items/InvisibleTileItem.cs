@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace UnveiledMystery.Items
 {
-    internal class RoomChoserItem1 : ModItem
+    internal class InvisibleTileItem : ModItem
     {
         public override void SetDefaults()
         {
@@ -14,7 +14,7 @@ namespace UnveiledMystery.Items
             Item.autoReuse = false;
             Item.maxStack = 100;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.RoomChoserTile1>();
+            Item.createTile = ModContent.TileType<Tiles.InvisibleTile>();
             Item.width = 16;
             Item.height = 16;
             Item.value = 0;

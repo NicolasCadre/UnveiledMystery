@@ -42,7 +42,7 @@ namespace UnveiledMystery.Enemies.Boss
         //Shoot Projectile and kill themselve when the boss' hand hit a wall
         public void Fall()
         {
-            Projectile.NewProjectile(new EntitySource_Misc(""), NPC.Center.X, NPC.Center.Y, 0, 8, ModContent.ProjectileType<Projectiles.StalactiteProjectile>(), 100, 5f);
+            Projectile.NewProjectile(NPC.GetSource_FromAI(), NPC.Center.X, NPC.Center.Y, 0, 8, ModContent.ProjectileType<Projectiles.StalactiteProjectile>(), 100, 5f);
 
             NPC.life = 0;
             NPC.checkDead();

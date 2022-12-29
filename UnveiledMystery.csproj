@@ -17,6 +17,9 @@
     <Folder Include="Structure\" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CollisionLib">
+      <HintPath>CollisionLib_v2.1.dll</HintPath>
+    </Reference>
     <Reference Include="StructureHelper">
       <HintPath>StructureHelper.dll</HintPath>
     </Reference>

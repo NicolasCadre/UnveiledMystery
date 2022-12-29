@@ -13,20 +13,21 @@ using Terraria.ObjectData;
 
 namespace UnveiledMystery.Tiles
 {
-    public class RoomChoserTile1 : ModTile
+    public class InvisibleTile : ModTile
     {
         public override void SetStaticDefaults()
         {
-            Main.tileSolid[Type] = false;
+            Main.tileSolid[Type] = true;
             Main.tileMergeDirt[Type] = false;
             Main.tileBlockLight[Type] = false;
             Main.tileLighted[Type] = true;
-            AddMapEntry(Color.Yellow, Language.GetText("RoomChoserTile1"));
-            Main.tileFrameImportant[Type] = false;
+            Main.tileFrameImportant[Type] = true;
 
-            TileObjectData.newTile.WaterDeath = true;
+            TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.newTile.WaterPlacement = LiquidPlacement.NotAllowed;
+            TileObjectData.newTile.AnchorBottom = new AnchorData(AnchorType.EmptyTile, TileObjectData.newTile.Width, 0);
             TileObjectData.newTile.LavaPlacement = LiquidPlacement.NotAllowed;
+            TileObjectData.addTile(Type);
         }
 
         public override bool CanKillTile(int i, int j, ref bool blockDamaged)

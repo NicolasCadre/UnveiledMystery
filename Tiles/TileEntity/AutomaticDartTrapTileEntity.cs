@@ -3,11 +3,15 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Localization;
+using System.Linq;
+
 namespace UnveiledMystery.Tiles.TileEntity
 {
     public class AutomaticDartTrapTileEntity : ModTileEntity
     {
-        private int timer = 0;
+        private int timer = 0; private const int TILEACTIVATIONRADIUS = 1000;
+        private bool activated = false;
         public override bool IsTileValidForEntity(int i, int j)
         {
             Tile tile = Main.tile[i, j];
@@ -20,8 +24,8 @@ namespace UnveiledMystery.Tiles.TileEntity
             if (Main.netMode == NetmodeID.MultiplayerClient)
             {
                 //Sync the entire multitile's area.  Modify "width" and "height" to the size of your multitile in tiles
-                int width = 2;
-                int height = 2;
+                int width = 1;
+                int height = 1;
                 NetMessage.SendTileSquare(Main.myPlayer, i, j, width, height);
 
                 //Sync the placement of the tile entity with other clients
@@ -44,13 +48,33 @@ namespace UnveiledMystery.Tiles.TileEntity
 
         public override void Update()
         {
-            timer++;
-            if(timer >60)
+            if (Main.netMode != NetmodeID.SinglePlayer)
             {
-                Vector2 direction = Main.tile[Position.X, Position.Y].TileFrameX == 0? new Vector2(-7.5f, 0) : new Vector2(7.5f, 0);
-                Projectile.NewProjectile(new EntitySource_Misc(""), Position.ToWorldCoordinates(), direction, ProjectileID.PoisonDart, 15, 5f);
+                if (Main.player.Any(p => Vector2.Distance(Position.ToWorldCoordinates(), p.position) <= TILEACTIVATIONRADIUS))
+                    activated = true;
+                else
+                    activated = false;
+            }
+            else
+            {
+                if (Vector2.Distance(Position.ToWorldCoordinates(), Main.LocalPlayer.position) <= TILEACTIVATIONRADIUS)
+                    activated = true;
+                else
+                    activated = false;
+            }
+
+            timer++;
+            if (timer > 60)
+            {
+                if (activated)
+                {
+                    Vector2 direction = Main.tile[Position.X, Position.Y].TileFrameX == 0 ? new Vector2(-7.5f, 0) : new Vector2(7.5f, 0);
+                    Projectile.NewProjectile(new EntitySource_Misc(""), Position.ToWorldCoordinates(), direction, ProjectileID.PoisonDart, 30, 5f);
+                }
                 timer = 0;
             }
+
+
 
             if (Main.tile[Position.X, Position.Y].TileType != ModContent.TileType<AutomaticDartTrapTile>())
                 Kill(Position.X, Position.Y);

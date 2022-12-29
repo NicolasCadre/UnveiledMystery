@@ -26,8 +26,10 @@ namespace UnveiledMystery.Enemies
     {
 
         float timerFloat = 60;
-        float timerFloatMax = 120;
+        const float TIMERFLOATMAX = 120;
         Direction timerFloatDirection = Direction.UP;
+        public Player targetPlayer;
+        const float VERTICALPOSITION = 400;
         public override void SetDefaults()
         {
             NPC.width = 40;
@@ -54,21 +56,25 @@ namespace UnveiledMystery.Enemies
 
         public override void AI()
         {
-            float factor = timerFloat / timerFloatMax;
+            Lighting.AddLight(NPC.Center, Color.Cyan.ToVector3());
+
+            //Nice floating effect
+            float factor = timerFloat / TIMERFLOATMAX;
             factor = MathHelper.SmoothStep(0, 1, factor);
             if (timerFloatDirection == Direction.UP)
                 timerFloat++;
             else
                 timerFloat--;
-            if (timerFloat > timerFloatMax)
+            if (timerFloat > TIMERFLOATMAX)
                 timerFloatDirection = Direction.DOWN;
             else if (timerFloat < 0)
                 timerFloatDirection = Direction.UP;
 
-
-            float ghostBaseHeight = MathHelper.Lerp(Main.player[0].position.Y - 195f, Main.player[0].position.Y - 205f,factor);
+            //Allign the ghost to it's attributed player
+            float ghostBaseHeight = MathHelper.Lerp(Main.player[0].position.Y - (VERTICALPOSITION-5), Main.player[0].position.Y - (VERTICALPOSITION+5),factor);
             NPC.position.X = Main.player[0].position.X;
             NPC.position.Y = ghostBaseHeight;
+
             Vector2 Dustspeed = Main.rand.NextVector2Unit((float)MathHelper.Pi / 4, (float)MathHelper.Pi / 3) * Main.rand.NextFloat();
             Dust.NewDust(NPC.Center + new Vector2(0, NPC.height / 2), 0, 0, 59, Dustspeed.X *0.5f, Dustspeed.Y *0.5f);
         }

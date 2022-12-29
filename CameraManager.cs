@@ -11,6 +11,7 @@ namespace UnveiledMystery
         public float shakeTimer = 0;
         public float shakeTimerMax = 0;
 
+
         public override void ModifyScreenPosition()
         {
 
@@ -33,6 +34,8 @@ namespace UnveiledMystery
             shakeTimerMax = TimerMax;
             isShaking = true;
         }
+
+
 
     }
 }

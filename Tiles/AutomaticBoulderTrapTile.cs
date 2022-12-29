@@ -49,5 +49,10 @@ namespace UnveiledMystery.Tiles
            // Point16 origin = TileUtils.GetTileOrigin(i, j);
             ModContent.GetInstance<AutomaticBoulderTrapTileEntity>().Kill(i, j);
         }
+
+        public override bool IsTileDangerous(int i, int j, Player player)
+        {
+            return true;
+        }
     }
 }

@@ -25,11 +25,17 @@ namespace UnveiledMystery.Tiles
             Main.tileBlockLight[Type] = false;
             Main.tileLighted[Type] = true;
             Main.tileFrameImportant[Type] = true;
+           
 
             TileObjectData.newTile.CopyFrom(TileObjectData.Style1x1);
             TileObjectData.newTile.Direction = TileObjectDirection.PlaceLeft;
             TileObjectData.newTile.WaterDeath = false;
             TileObjectData.newTile.WaterPlacement = LiquidPlacement.NotAllowed;
+            TileObjectData.newTile.AnchorRight = AnchorData.Empty;
+            TileObjectData.newTile.AnchorLeft = AnchorData.Empty;
+            TileObjectData.newTile.AnchorBottom = AnchorData.Empty;
+            TileObjectData.newTile.AnchorTop = AnchorData.Empty;
+
             TileObjectData.newTile.LavaPlacement = LiquidPlacement.NotAllowed;
             TileObjectData.newTile.HookPostPlaceMyPlayer = new PlacementHook(ModContent.GetInstance<AutomaticDartTrapTileEntity>().Hook_AfterPlacement, -1, 0, false);
             TileObjectData.newTile.StyleHorizontal = true;
@@ -45,6 +51,11 @@ namespace UnveiledMystery.Tiles
         {
            // Point16 origin = TileUtils.GetTileOrigin(i, j);
             ModContent.GetInstance<AutomaticDartTrapTileEntity>().Kill(i, j);
+        }
+
+        public override bool IsTileDangerous(int i, int j, Player player)
+        {
+            return true;
         }
     }
 }

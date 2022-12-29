@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Linq;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -8,11 +10,13 @@ namespace UnveiledMystery.Tiles.TileEntity
     public class AutomaticBoulderTrapTileEntity : ModTileEntity
     {
         private int timer = 0;
+        private const int TILEACTIVATIONRADIUS = 1500;
+        private bool activated = false;
         public override bool IsTileValidForEntity(int i, int j)
         {
             Tile tile = Main.tile[i, j];
             //The MyTile class is shown later
-            return tile.HasTile && tile.TileType == ModContent.TileType<AutomaticDartTrapTile>();
+            return tile.HasTile && tile.TileType == ModContent.TileType<AutomaticBoulderTrapTile>();
         }
 
         public override int Hook_AfterPlacement(int i, int j, int type, int style, int direction, int alternate)
@@ -44,13 +48,33 @@ namespace UnveiledMystery.Tiles.TileEntity
 
         public override void Update()
         {
-            timer++;
-            if(timer >180)
+            if (Main.netMode != NetmodeID.SinglePlayer)
             {
-                Vector2 direction = Main.tile[Position.X, Position.Y].TileFrameX == 0? new Vector2(-2f, 0) : new Vector2(2f, 0);
-                Projectile.NewProjectile(new EntitySource_Misc(""), Position.ToWorldCoordinates(), direction, ProjectileID.Boulder, 15, 5f);
+                if (Main.player.Any(p => Vector2.Distance(Position.ToWorldCoordinates(), p.position) <= TILEACTIVATIONRADIUS))
+                    activated = true;
+                else
+                    activated = false;
+            }
+            else
+            {
+                if (Vector2.Distance(Position.ToWorldCoordinates(), Main.LocalPlayer.position) <= TILEACTIVATIONRADIUS)
+                    activated = true;
+                else
+                    activated = false;
+            }
+
+            timer++;
+            if (timer > 180)
+            {
+                if (activated)
+                {
+                    Vector2 direction = Main.tile[Position.X, Position.Y].TileFrameX == 0 ? new Vector2(-2f, 0) : new Vector2(2f, 0);
+                    Projectile.NewProjectile(new EntitySource_Misc(""), Position.ToWorldCoordinates(), direction, ProjectileID.Boulder, 50, 5f);
+
+                }
                 timer = 0;
             }
+
 
             if (Main.tile[Position.X, Position.Y].TileType != ModContent.TileType<AutomaticBoulderTrapTile>())
                 Kill(Position.X, Position.Y);

@@ -1,6 +1,6 @@
 displayName = Unveiled Mystery
 author = Snopingas
 version = 0.1
-modReferences = StructureHelper
-sortAfter = StructureHelper
+modReferences = StructureHelper, CollisionLib
+sortAfter = StructureHelper, CollisionLib
 hideResources = true

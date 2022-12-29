@@ -19,7 +19,7 @@ namespace UnveiledMystery
     public class LivingTrapBossArenaProtector : ModSystem
     {
         public static List<Player> PlayersInArena = new List<Player>();
-        private Point bossSummonTilePosition;
+        public static Point bossSummonTilePosition;
         public static int[] ArenaCoordinates = new int[4];
         public static List<Tile> ArenaTiles = new List<Tile>();
         private bool check = false;
@@ -29,23 +29,46 @@ namespace UnveiledMystery
         public override void OnWorldLoad()
         {
             ArenaCoordinates = new int[4];
+            for (int i = 0; i <= 3; i++)
+                ArenaCoordinates[i] = 0;
 
-        }
-        public override void SaveWorldData(TagCompound tag)
-        {
-            tag["ArenaCoordinates"] = ArenaCoordinates;
         }
 
         public override void LoadWorldData(TagCompound tag)
         {
             if (tag.ContainsKey("ArenaCoordinates"))
+            {
                 ArenaCoordinates = tag.GetIntArray("ArenaCoordinates");
+                check = true;
+                for (int x = ArenaCoordinates[0]; x <= ArenaCoordinates[1]; x++)
+                {
+                    for (int y = ArenaCoordinates[2]; y < ArenaCoordinates[3]; y++)
+                    {
+                        Tile tile = Main.tile[x, y];
+                        if (!tile.HasTile)
+                        {
+                            tile.HasTile = true;
+                            tile.TileType = 38;
+                        }
+                        if (tile.HasTile && tile.TileType != ModContent.TileType<BossSummonAltarTile>())
+                        {
+                            ArenaTiles.Add(tile);
+                        }
+                    }
+                }
+            }
         }
+        public override void SaveWorldData(TagCompound tag)
+        {
+            if (ArenaCoordinates[0] !=0)
+                tag["ArenaCoordinates"] = ArenaCoordinates;
+        }
+
+
         public override void PostUpdateTime()
         {
             if (!check)
             {
-
                 if (ArenaCoordinates.All(v => v == 0))
                 {
                     TimerCheckCoordinate++;
@@ -109,7 +132,16 @@ namespace UnveiledMystery
                     }
                 }
             }
+            else
+            {
+                TimerCheckPlayer++;
+                if (TimerCheckPlayer >= 60)
+                {
 
+                    CheckArenaPlayer();
+                    TimerCheckPlayer = 0;
+                }
+            }
 
             if (!ArenaCoordinates.All(v => v == 0))
             {
@@ -128,10 +160,20 @@ namespace UnveiledMystery
             }
         }
 
-        public static List<Player> CheckArenaPlayer()
+        public static void CheckArenaPlayer()
         {
             foreach (Player player in Main.player)
             {
+                /*ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("ArenaCoordinates[0]" + ArenaCoordinates[0]), Color.White);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("ArenaCoordinates[1]" + ArenaCoordinates[1]), Color.White);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("ArenaCoordinates[2]" + ArenaCoordinates[2]), Color.White);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("ArenaCoordinates[3]" + ArenaCoordinates[3]), Color.White);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Main.player[0].position.ToTileCoordinates().X" + Main.player[0].position.ToTileCoordinates().X), Color.White);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("Main.player[0].position.ToTileCoordinates().Y" + Main.player[0].position.ToTileCoordinates().Y), Color.White);
+                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("bossSummonTilePositionX = " + bossSummonTilePosition.X + "bossSummonTilePositionY = "+ bossSummonTilePosition.Y), Color.White);
+                */
+                
+
                 Player currentPlayer = Main.player[player.whoAmI];
                 if (ArenaCoordinates[0] != 0 && ArenaCoordinates[1] != 0 && ArenaCoordinates[2] != 0 && ArenaCoordinates[3] != 0)
                 {
@@ -140,7 +182,6 @@ namespace UnveiledMystery
                         if (PlayersInArena.All(p => p.whoAmI != currentPlayer.whoAmI))
                         {
                             PlayersInArena.Add(Main.player[currentPlayer.whoAmI]);
-                            ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("hey1"), Color.White);
 
                         }
                     }
@@ -151,13 +192,11 @@ namespace UnveiledMystery
                             if (p.whoAmI == currentPlayer.whoAmI)
                             {
                                 PlayersInArena.Remove(Main.player[currentPlayer.whoAmI]);
-                                ChatHelper.BroadcastChatMessage(NetworkText.FromLiteral("hey2 "), Color.White);
                             }
                         }
                     }
                 }
             }
-            return PlayersInArena;
         }
     }
 }

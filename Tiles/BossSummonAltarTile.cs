@@ -37,7 +37,7 @@ namespace UnveiledMystery.Tiles
             TileObjectData.newTile.Width = 3;
             TileObjectData.newTile.Height = 3;
             TileObjectData.addTile(Type);
-            ItemDrop = ModContent.ItemType<Items.RoomChoserItem0>();
+            ItemDrop = ModContent.ItemType<Items.RoomChoserItem>();
         }
 
         public override void KillMultiTile(int i, int j, int frameX, int frameY)

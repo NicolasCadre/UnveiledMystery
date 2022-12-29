@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace UnveiledMystery.Items
 {
-    internal class BossSummonAltarItem :ModItem
+    internal class BossSummonAltarItem : ModItem
     {
         public override void SetDefaults()
         {

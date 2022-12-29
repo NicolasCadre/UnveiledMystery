@@ -17,35 +17,41 @@ namespace UnveiledMystery
             progress.Message = "Add a strange ruin";
             Mod mod = ModLoader.GetMod("UnveiledMystery");
 
+            //Generate the structure's skeleton
             int i = WorldGen.genRand.Next(100, Main.maxTilesX - 100);
             int j = WorldGen.genRand.Next((int)WorldGen.worldSurface+200, Main.maxTilesY - 300);
-            StructureHelper.Generator.GenerateStructure("Structure/BossArena", new Point16(i, j), mod);
+            StructureHelper.Generator.GenerateStructure("Structure/DungeonMain", new Point16(i, j), mod);
 
-           /* for (int number = 0; number <= 50; number++)
-            {
-                int i = WorldGen.genRand.Next(100, Main.maxTilesX - 100);
-                int j = WorldGen.genRand.Next(0, Main.maxTilesY - 800);
-                StructureHelper.Generator.GenerateStructure("Structure/BaseStructure", new Point16(i, j), mod);
-            }
-
+            //Generate the structure rooms
             for (int x = 0; x < Main.tile.Width; x++)
             {
                 for (int y = 0; y < Main.tile.Height; y++)
                 {
                     Tile tile = Main.tile[x, y];
-                    if (tile.TileType == ModContent.TileType<RoomChoserTile0>())
+
+                    if (tile.TileType == ModContent.TileType<RoomChoserTile>())
                     {
-                        StructureHelper.Generator.GenerateMultistructureRandom("Structure/Room0", new Point16(x, y), mod);
-                        tile.HasTile = false;
-                    }
-                    else if (tile.TileType == ModContent.TileType<RoomChoserTile1>())
-                    {
-                        StructureHelper.Generator.GenerateMultistructureRandom("Structure/Room1", new Point16(x, y), mod);
-                        tile.HasTile = false;
+                        int frame = tile.TileFrameX / 18;
+                        switch (frame)
+                        {
+                            case 0:
+                                StructureHelper.Generator.GenerateMultistructureRandom("Structure/DungeonRoom0", new Point16(x, y), mod);
+                                break;
+                            case 1:
+                                StructureHelper.Generator.GenerateStructure("Structure/DungeonRoom1", new Point16(x, y), mod);
+                                break;
+                            case 2:
+                                StructureHelper.Generator.GenerateStructure("Structure/DungeonRoom2", new Point16(x, y), mod);
+                                break;
+                            case 3:
+                                StructureHelper.Generator.GenerateStructure("Structure/DungeonRoom3", new Point16(x, y), mod);
+                                break;
+
+                        }
                     }
 
                 }
-            }*/
+            }
         }
 
     }

@@ -12,6 +12,7 @@ using Terraria.Localization;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using UnveiledMystery.Tiles;
 
 namespace UnveiledMystery.Enemies.Boss
 {
@@ -368,6 +369,20 @@ namespace UnveiledMystery.Enemies.Boss
             // Spawn the Hand
             if (!doOnce)
             {
+                for (int x = 0; x < Main.tile.Width; x++)
+                {
+                    for (int y = 0; y < Main.tile.Height; y++)
+                    {
+                        Tile tile= Main.tile[x,y];
+                        if (tile.TileType == ModContent.TileType<BossTrapDoorTile>())
+                        {
+                            if (tile.TileFrameX != 0 && tile.TileFrameX != 18)
+                                tile.TileFrameX -= 36;
+                            Main.tileSolid[tile.TileType] = true;
+
+                        }
+                    }
+                }
                 if (Main.netMode == NetmodeID.Server)
                 {
                     ModPacket myPacket = Mod.GetPacket();

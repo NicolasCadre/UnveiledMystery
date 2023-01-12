@@ -166,7 +166,7 @@ namespace UnveiledMystery.Enemies.Boss
                 shootVel.Normalize();
                 shootVel *= 3.5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    Laser = Main.projectile[Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.BossLaser>(), NPC.damage / 2, 5f)];
+                    Laser = Main.projectile[Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.LivingTrapLaser>(), NPC.damage / 2, 5f)];
             }
             // Charge the Laser
             if ((double)LaserTimer >= LaserTimerStart)
@@ -277,7 +277,7 @@ namespace UnveiledMystery.Enemies.Boss
                         {
                             Vector2 RotatedVel = shootVel.RotatedBy(MathHelper.Lerp(-rotation, rotation, (float)i / ((float)maxBullet - 1)));
                             if (Main.netMode != NetmodeID.MultiplayerClient)
-                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, Main.expertMode ? RotatedVel.X * 1.5f : shootVel.X * 1.5f, Main.expertMode ? RotatedVel.Y * 1.5f : shootVel.Y * 1.5f, ModContent.ProjectileType<Projectiles.BossBouncingBullet>(), NPC.damage / 3, 5f);
+                                Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, Main.expertMode ? RotatedVel.X * 1.5f : shootVel.X * 1.5f, Main.expertMode ? RotatedVel.Y * 1.5f : shootVel.Y * 1.5f, ModContent.ProjectileType<Projectiles.LivingTrapBouncingProjectile>(), NPC.damage / 3, 5f);
 
                         }
                     }
@@ -307,7 +307,7 @@ namespace UnveiledMystery.Enemies.Boss
                 shootVel.Normalize();
                 shootVel *= 3.5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.BigBossLaser>(), NPC.damage / 2, 5f);
+                    Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.LivingTrapBigLaser>(), NPC.damage / 2, 5f);
                 hasStartedPhaseTransition = true;
             }
 
@@ -374,7 +374,7 @@ namespace UnveiledMystery.Enemies.Boss
                     for (int y = 0; y < Main.tile.Height; y++)
                     {
                         Tile tile= Main.tile[x,y];
-                        if (tile.TileType == ModContent.TileType<BossTrapDoorTile>())
+                        if (tile.TileType == ModContent.TileType<LivingTrapArenaTrapDoor_Tile>())
                         {
                             if (tile.TileFrameX != 0 && tile.TileFrameX != 18)
                                 tile.TileFrameX -= 36;
@@ -569,7 +569,7 @@ namespace UnveiledMystery.Enemies.Boss
         public override void PostDraw(SpriteBatch spriteBatch, Vector2 screenPosition, Color alphaColor)
         {
             int frameCountEye = 3;
-            Asset<Texture2D> textureEye = Request<Texture2D>("UnveiledMystery/Enemies/Boss/LivingTrapBoss_Glow");
+            Asset<Texture2D> textureEye = Request<Texture2D>("UnveiledMystery/Enemies/Boss/LivingTrapBoss_GlowEye");
             int frameHeightEye = textureEye.Value.Height / frameCountEye;
             int startYEye = frameHeightEye * (frameGlowmaskEye);
             Rectangle sourceRectangleEye = new Rectangle(0, startYEye, textureEye.Value.Width, frameHeightEye);

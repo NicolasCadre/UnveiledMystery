@@ -50,7 +50,7 @@ namespace UnveiledMystery
                             tile.HasTile = true;
                             tile.TileType = 38;
                         }
-                        if (tile.HasTile && tile.TileType != ModContent.TileType<BossSummonAltarTile>())
+                        if (tile.HasTile && tile.TileType != ModContent.TileType<LivingTrapSummonAltar_Tile>())
                         {
                             ArenaTiles.Add(tile);
                         }
@@ -86,7 +86,7 @@ namespace UnveiledMystery
                                     {
                                         if (x >= 0 && y >= 0 && x <= Main.tile.Width - 1 && y <= Main.tile.Height - 1)
                                         {
-                                            if (Main.tile[x, y].TileType == ModContent.TileType<BossSummonAltarTile>())
+                                            if (Main.tile[x, y].TileType == ModContent.TileType<LivingTrapSummonAltar_Tile>())
                                             {
                                                 bossSummonTilePosition = new Point(x, y + 2);
                                                 Point arenaLenght = new Vector2(3000, 432).ToTileCoordinates();
@@ -122,7 +122,7 @@ namespace UnveiledMystery
                                     tile.HasTile = true;
                                     tile.TileType = 38;
                                 }
-                                if (tile.HasTile && tile.TileType != ModContent.TileType<BossSummonAltarTile>())
+                                if (tile.HasTile && tile.TileType != ModContent.TileType<LivingTrapSummonAltar_Tile>())
                                 {
                                     ArenaTiles.Add(tile);
                                 }

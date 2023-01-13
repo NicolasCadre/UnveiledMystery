@@ -3,7 +3,7 @@ using Terraria.ModLoader;
 
 namespace UnveiledMystery.Items
 {
-    internal class AutomaticDartTrapRainItem : ModItem
+    internal class AutomaticDartTrap_Item : ModItem
     {
         public override void SetDefaults()
         {
@@ -14,7 +14,7 @@ namespace UnveiledMystery.Items
             Item.autoReuse = false;
             Item.maxStack = 100;
             Item.consumable = true;
-            Item.createTile = ModContent.TileType<Tiles.AutomaticDartTrapRain_Tile>();
+            Item.createTile = ModContent.TileType<Tiles.AutomaticDartTrap_Tile>();
             Item.width = 16;
             Item.height = 16;
             Item.value = 0;

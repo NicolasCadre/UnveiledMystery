@@ -26,43 +26,42 @@ namespace UnveiledMystery.Enemies.Boss
         }
 
         ProjectileType type;
-        float projectileAI
+        float ProjectileAITimer
         {
             get => NPC.ai[0];
             set => NPC.ai[0] = value;
         }
-        private Vector2 BossArenaLocation;
-        float LaserTimer
+        private Vector2 BossArenaLeftBorder;
+        float LaserAITimer
         {
             get => NPC.ai[1];
             set => NPC.ai[1] = value;
         }
-        float walkingTimer
+        float WalkingAITimer
         {
             get => NPC.ai[2];
             set => NPC.ai[2] = value;
         }
-        int ProjectileAttackTimer;
-        private bool hasChangedProjectileAttackTimer = false;
-        private bool hasChangedLaserAttackTimer = false;
-        int LaserTimerStart;
+        int ProjectileAITimerMax;
+        private bool hasChangedProjectileAITimerMax = false;
+        private bool hasChangedLaserAITimer = false;
+        int LaserAttackStartTime;
 
         private float LaserChargingFlickeringTimer = 0;
         private float LaserChargingFlickeringTimerMax = 50;
 
-        public bool hasFinishedPhaseTransition = false;
-        public bool hasStartedPhaseTransition = false;
+        public bool HasFinishedPhaseTransition = false;
+        public bool HasStartedPhaseTransition = false;
         private bool hasLaunchedLaser = false;
 
-        private Projectile Laser;
-        public Player player;
+        private Projectile laser;
+        public Player Player;
         public bool Enraged = false;
 
         //Animation
         private int frame = 0;
-        private double counting;
-        public int frameGlowmaskEye = 0;
-        public int frameGlowmaskMouth = 1;
+        public int FrameGlowmaskEye = 0;
+        public int FframeGlowmaskMouth = 1;
         private bool doOnce = false;
         List<Player> PlayersInArena = new List<Player>();
 
@@ -120,31 +119,31 @@ namespace UnveiledMystery.Enemies.Boss
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                if(hasFinishedPhaseTransition)
-                    ProjectileAttackTimer = Main.expertMode ? Main.rand.Next(50, 150) : Main.rand.Next(100, 200);
+                if(HasFinishedPhaseTransition)
+                    ProjectileAITimerMax = Main.expertMode ? Main.rand.Next(50, 150) : Main.rand.Next(100, 200);
                 else
-                    ProjectileAttackTimer = Main.expertMode ? Main.rand.Next(100, 200) : Main.rand.Next(150, 250);
+                    ProjectileAITimerMax = Main.expertMode ? Main.rand.Next(100, 200) : Main.rand.Next(150, 250);
 
                 type = (ProjectileType)Main.rand.Next(1, 3);
             }
             NPC.netUpdate = true;
 
-            hasChangedProjectileAttackTimer = true;
+            hasChangedProjectileAITimerMax = true;
         }
 
         private void ResetLaserTimer()
         {
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                LaserTimerStart = Main.expertMode ? Main.rand.Next(100, 200) : Main.rand.Next(150, 250);
+                LaserAttackStartTime = Main.expertMode ? Main.rand.Next(100, 200) : Main.rand.Next(150, 250);
 
             }
 
-            hasChangedLaserAttackTimer = true;
+            hasChangedLaserAITimer = true;
             LaserChargingFlickeringTimerMax = Main.expertMode ? 40 : 50;
             LaserChargingFlickeringTimer = 0;
-            frameGlowmaskMouth = 1;
-            Laser = null;
+            FframeGlowmaskMouth = 1;
+            laser = null;
             NPC.netUpdate = true;
 
         }
@@ -152,13 +151,13 @@ namespace UnveiledMystery.Enemies.Boss
         {
 
             // Reload the Laser
-            if ((double)LaserTimer >= LaserTimerStart + (Main.expertMode ? 150f : 200f))
+            if ((double)LaserAITimer >= LaserAttackStartTime + (Main.expertMode ? 150f : 200f))
             {
-                LaserTimer = 0;
-                hasChangedLaserAttackTimer = false;
+                LaserAITimer = 0;
+                hasChangedLaserAITimer = false;
             }
             // Shoot the Laser
-            else if ((double)LaserTimer == LaserTimerStart)
+            else if ((double)LaserAITimer == LaserAttackStartTime)
             {
 
                 Vector2 shootPos = NPC.Center - new Vector2(20, -145);
@@ -166,22 +165,22 @@ namespace UnveiledMystery.Enemies.Boss
                 shootVel.Normalize();
                 shootVel *= 3.5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
-                    Laser = Main.projectile[Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.LivingTrapLaser>(), NPC.damage / 2, 5f)];
+                    laser = Main.projectile[Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.LivingTrapLaser>(), NPC.damage / 2, 5f)];
             }
             // Charge the Laser
-            if ((double)LaserTimer >= LaserTimerStart)
+            if ((double)LaserAITimer >= LaserAttackStartTime)
             {
                 LaserChargingFlickeringTimer++;
                 //Blinking Mouth Sign
                 if (LaserChargingFlickeringTimer >= LaserChargingFlickeringTimerMax)
                 {
-                    LaserChargingFlickeringTimerMax = MathHelper.Lerp(Main.expertMode ? 40f : 50f, 10f, Main.expertMode ? LaserTimer / (LaserTimerStart + 50f) : LaserTimer / (LaserTimerStart + 100f));
-                    frameGlowmaskMouth = frameGlowmaskMouth == 0 ? 1 : 0;
-                    if (frameGlowmaskMouth == 0)
+                    LaserChargingFlickeringTimerMax = MathHelper.Lerp(Main.expertMode ? 40f : 50f, 10f, Main.expertMode ? LaserAITimer / (LaserAttackStartTime + 50f) : LaserAITimer / (LaserAttackStartTime + 100f));
+                    FframeGlowmaskMouth = FframeGlowmaskMouth == 0 ? 1 : 0;
+                    if (FframeGlowmaskMouth == 0)
                         SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Boss/LivingTrapBossLaser")
                         {
                             Volume = 0.5f,
-                            Pitch = MathHelper.Lerp(-1f, 1f, Main.expertMode ? LaserTimer / (LaserTimerStart + 150f) : LaserTimer / (LaserTimerStart + 210f))
+                            Pitch = MathHelper.Lerp(-1f, 1f, Main.expertMode ? LaserAITimer / (LaserAttackStartTime + 150f) : LaserAITimer / (LaserAttackStartTime + 210f))
                         });
                     LaserChargingFlickeringTimer = 0;
                 }
@@ -190,12 +189,12 @@ namespace UnveiledMystery.Enemies.Boss
         private void ProjectileAI(Vector2 target)
         {
             int distance = (int)Vector2.Distance(target, NPC.Center);
-            if ((double)projectileAI < ProjectileAttackTimer)
+            if ((double)ProjectileAITimer < ProjectileAITimerMax)
             {
-                frameGlowmaskEye = 2;
+                FrameGlowmaskEye = 2;
             }
             // Visual Attack Sign
-            else if ((double)projectileAI >= ProjectileAttackTimer && (double)projectileAI < ProjectileAttackTimer + 120)
+            else if ((double)ProjectileAITimer >= ProjectileAITimerMax && (double)ProjectileAITimer < ProjectileAITimerMax + 120)
             {
                 SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Boss/LivingTrapBossProjectile")
                 {
@@ -205,22 +204,22 @@ namespace UnveiledMystery.Enemies.Boss
 
                 if (type == ProjectileType.BOUNCING)
                 {
-                    frameGlowmaskEye = 0;
+                    FrameGlowmaskEye = 0;
                     Dust.NewDust(NPC.Center - new Vector2(0, 140), 30, 30, 131);
                 }
                 else if (type == ProjectileType.TRIPLE)
                 {
-                    frameGlowmaskEye = 1;
+                    FrameGlowmaskEye = 1;
                     Dust.NewDust(NPC.Center - new Vector2(0, 140), 30, 30, 130);
                 }
             }
 
             // Shoot
-            else if ((double)projectileAI >= ProjectileAttackTimer + 120)
+            else if ((double)ProjectileAITimer >= ProjectileAITimerMax + 120)
             {
                 ShootProjectile(target);
-                hasChangedProjectileAttackTimer = false;
-                projectileAI = 0;
+                hasChangedProjectileAITimerMax = false;
+                ProjectileAITimer = 0;
             }
         }
 
@@ -288,19 +287,19 @@ namespace UnveiledMystery.Enemies.Boss
         // Do what happen when boss is half hp
         private void PhaseTransition()
         {
-            if (!hasStartedPhaseTransition)
+            if (!HasStartedPhaseTransition)
             {
                 hasLaunchedLaser = false;
-                if (Laser != null)
-                    Laser.Kill();
+                if (laser != null)
+                    laser.Kill();
 
-                frameGlowmaskMouth = 1;
-                frameGlowmaskEye = 2;
+                FframeGlowmaskMouth = 1;
+                FrameGlowmaskEye = 2;
                 NPC.dontTakeDamage = true;
                 ResetLaserTimer();
                 ResetProjectileTimer();
-                projectileAI = 0;
-                LaserTimer = 0;
+                ProjectileAITimer = 0;
+                LaserAITimer = 0;
 
                 Vector2 shootPos = NPC.Center - new Vector2(20, -105);
                 Vector2 shootVel = new Vector2(-1, 10) - shootPos;//+ new Vector2(Main.rand.NextFloat(-accuracy, accuracy), Main.rand.NextFloat(-accuracy, accuracy)); 
@@ -308,44 +307,44 @@ namespace UnveiledMystery.Enemies.Boss
                 shootVel *= 3.5f;
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                     Projectile.NewProjectile(NPC.GetSource_FromAI(), shootPos.X, shootPos.Y, shootVel.X, 0, ModContent.ProjectileType<Projectiles.LivingTrapBigLaser>(), NPC.damage / 2, 5f);
-                hasStartedPhaseTransition = true;
+                HasStartedPhaseTransition = true;
             }
 
             //Charge the Laser
-            if ((double)projectileAI <= (Main.expertMode ? 200f : 260f))
+            if ((double)ProjectileAITimer <= (Main.expertMode ? 200f : 260f))
             {
                 LaserChargingFlickeringTimer++;
                 //Blinking Mouth Sign
                 if (LaserChargingFlickeringTimer >= LaserChargingFlickeringTimerMax)
                 {
-                    LaserChargingFlickeringTimerMax = MathHelper.Lerp(Main.expertMode ? 40f : 50f, 10f, Main.expertMode ? projectileAI / 140f : projectileAI / 200f);
-                    frameGlowmaskMouth = frameGlowmaskMouth == 0 ? 1 : 0;
-                    if (frameGlowmaskMouth == 0)
+                    LaserChargingFlickeringTimerMax = MathHelper.Lerp(Main.expertMode ? 40f : 50f, 10f, Main.expertMode ? ProjectileAITimer / 140f : ProjectileAITimer / 200f);
+                    FframeGlowmaskMouth = FframeGlowmaskMouth == 0 ? 1 : 0;
+                    if (FframeGlowmaskMouth == 0)
                         SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Boss/LivingTrapBossLaser")
                         {
                             Volume = 0.5f,
-                            Pitch = MathHelper.Lerp(-1f, 1f, Main.expertMode ? projectileAI / 200f : projectileAI / 260f)
+                            Pitch = MathHelper.Lerp(-1f, 1f, Main.expertMode ? ProjectileAITimer / 200f : ProjectileAITimer / 260f)
                         });
                     LaserChargingFlickeringTimer = 0;
                 }
             }
 
             // Feedback for shooting Laser
-            if ((double)projectileAI >= (Main.expertMode ? 200f : 260f) && !hasLaunchedLaser)
+            if ((double)ProjectileAITimer >= (Main.expertMode ? 200f : 260f) && !hasLaunchedLaser)
             {
                 foreach (Tile tile in LivingTrapBossArenaProtector.ArenaTiles)
                     tile.HasTile = false;
-                player.GetModPlayer<CameraManager>().Shake(100, 200f);
+                Player.GetModPlayer<CameraManager>().Shake(100, 200f);
                 hasLaunchedLaser = true;
-                frameGlowmaskMouth = 0;
+                FframeGlowmaskMouth = 0;
             }
 
             // Start Phase 2
-            if ((double)projectileAI >= (Main.expertMode ? 200f : 260f) + 200f)
+            if ((double)ProjectileAITimer >= (Main.expertMode ? 200f : 260f) + 200f)
             {
                 NPC.dontTakeDamage = false;
-                projectileAI = 0;
-                hasFinishedPhaseTransition = true;
+                ProjectileAITimer = 0;
+                HasFinishedPhaseTransition = true;
             }
 
         }
@@ -396,7 +395,7 @@ namespace UnveiledMystery.Enemies.Boss
                 }
                 else
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.position.X + NPC.width - 90, (int)NPC.position.Y + NPC.height, ModContent.NPCType<LivingTrapBossHand>());
-                BossArenaLocation = new Vector2(LivingTrapBossArenaProtector.ArenaCoordinates[0], LivingTrapBossArenaProtector.ArenaCoordinates[2]).ToWorldCoordinates();
+                BossArenaLeftBorder = new Vector2(LivingTrapBossArenaProtector.ArenaCoordinates[0], LivingTrapBossArenaProtector.ArenaCoordinates[2]).ToWorldCoordinates();
 
                 doOnce = true;
             }
@@ -404,21 +403,21 @@ namespace UnveiledMystery.Enemies.Boss
             if (PlayersInArena.Count != 0)
             {
                 if (PlayersInArena.Count == 1)
-                    player = Main.player[NPC.target];
+                    Player = Main.player[NPC.target];
                 else
-                    player = PlayersInArena[Main.rand.Next(0, PlayersInArena.Count)];
+                    Player = PlayersInArena[Main.rand.Next(0, PlayersInArena.Count)];
             }
             // Reset projectile and laser timers
-            if (!hasChangedProjectileAttackTimer)
+            if (!hasChangedProjectileAITimerMax)
                 ResetProjectileTimer();
 
-            if (!hasChangedLaserAttackTimer && !hasFinishedPhaseTransition)
+            if (!hasChangedLaserAITimer && !HasFinishedPhaseTransition)
                 ResetLaserTimer();
 
 
 
 
-            Vector2 target = player != null ? player.Center : Main.npc[NPC.target].Center;
+            Vector2 target = Player != null ? Player.Center : Main.npc[NPC.target].Center;
 
             NPC.rotation = 0.0f;
 
@@ -446,51 +445,51 @@ namespace UnveiledMystery.Enemies.Boss
 
             if (Main.netMode != NetmodeID.MultiplayerClient)
             {
-                projectileAI++;
+                ProjectileAITimer++;
             }
 
             // Walk pattern and phase transition
-            if (NPC.life <= NPC.lifeMax / 2 && hasFinishedPhaseTransition)
+            if (NPC.life <= NPC.lifeMax / 2 && HasFinishedPhaseTransition)
             {
-                walkingTimer++;
+                WalkingAITimer++;
 
-                if (walkingTimer <= 100)
+                if (WalkingAITimer <= 100)
                     NPC.velocity.X = -2;
-                else if (walkingTimer > 100 && walkingTimer <= 200)
+                else if (WalkingAITimer > 100 && WalkingAITimer <= 200)
                     NPC.velocity.X = 0;
-                else if (walkingTimer > 200)
-                    walkingTimer = 0;
+                else if (WalkingAITimer > 200)
+                    WalkingAITimer = 0;
             }
-            else if (NPC.life <= NPC.lifeMax / 2 && !hasFinishedPhaseTransition)
+            else if (NPC.life <= NPC.lifeMax / 2 && !HasFinishedPhaseTransition)
                 PhaseTransition();
-            if (!hasFinishedPhaseTransition && hasStartedPhaseTransition)
+            if (!HasFinishedPhaseTransition && HasStartedPhaseTransition)
                 return;
 
 
 
-            if (NPC.life > NPC.lifeMax / 2 || hasFinishedPhaseTransition)
+            if (NPC.life > NPC.lifeMax / 2 || HasFinishedPhaseTransition)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    LaserTimer++;
-                    LaserTimer = (float)LaserTimer;
+                    LaserAITimer++;
+                    LaserAITimer = (float)LaserAITimer;
 
                 }
             }
 
             // Laser and Projectiles Attacks
-            if(!hasFinishedPhaseTransition)
+            if(!HasFinishedPhaseTransition)
                 LaserAI();
 
             ProjectileAI(target);
 
             //Rage
-            if (target.X >= NPC.position.X || target.X <= BossArenaLocation.X || target.Y <= NPC.Center.Y - 250 || target.Y >= NPC.Center.Y + 250)
+            if (target.X >= NPC.position.X || target.X <= BossArenaLeftBorder.X || target.Y <= NPC.Center.Y - 250 || target.Y >= NPC.Center.Y + 250)
             {
                 Enraged = true;
-                if ((double)projectileAI % 50 == 0)
+                if ((double)ProjectileAITimer % 50 == 0)
                 {
-                    player.GetModPlayer<CameraManager>().Shake(10, 50f);
+                    Player.GetModPlayer<CameraManager>().Shake(10, 50f);
 
                     for (int i = 0; i <= 10; i++)
                     {
@@ -505,8 +504,8 @@ namespace UnveiledMystery.Enemies.Boss
                 Enraged = false;
 
             // Kill all players if the boss reach the western wall
-            if (Vector2.Distance(player.position, NPC.position) <= 2000f && NPC.position.X <= BossArenaLocation.X)
-                player.KillMe(PlayerDeathReason.ByCustomReason("You've been crushed"), 9999, 0);
+            if (Vector2.Distance(Player.position, NPC.position) <= 2000f && NPC.position.X <= BossArenaLeftBorder.X)
+                Player.KillMe(PlayerDeathReason.ByCustomReason("You've been crushed"), 9999, 0);
 
 
 
@@ -529,17 +528,17 @@ namespace UnveiledMystery.Enemies.Boss
 
         public override void SendExtraAI(BinaryWriter binaryWriter)
         {
-            binaryWriter.Write(ProjectileAttackTimer);
+            binaryWriter.Write(ProjectileAITimerMax);
             binaryWriter.Write((int)type);
-            binaryWriter.Write(LaserTimerStart);
+            binaryWriter.Write(LaserAttackStartTime);
 
         }
 
         public override void ReceiveExtraAI(BinaryReader binaryReader)
         {
-            ProjectileAttackTimer = binaryReader.Read();
+            ProjectileAITimerMax = binaryReader.Read();
             type = (ProjectileType)binaryReader.Read();
-            LaserTimerStart = binaryReader.Read();
+            LaserAttackStartTime = binaryReader.Read();
 
         }
 
@@ -571,7 +570,7 @@ namespace UnveiledMystery.Enemies.Boss
             int frameCountEye = 3;
             Asset<Texture2D> textureEye = Request<Texture2D>("UnveiledMystery/Enemies/Boss/LivingTrapBoss_GlowEye");
             int frameHeightEye = textureEye.Value.Height / frameCountEye;
-            int startYEye = frameHeightEye * (frameGlowmaskEye);
+            int startYEye = frameHeightEye * (FrameGlowmaskEye);
             Rectangle sourceRectangleEye = new Rectangle(0, startYEye, textureEye.Value.Width, frameHeightEye);
 
             spriteBatch.Draw
@@ -590,7 +589,7 @@ namespace UnveiledMystery.Enemies.Boss
             int frameCountMouth = 2;
             Asset<Texture2D> textureMouth = Request<Texture2D>("UnveiledMystery/Enemies/Boss/LivingTrapBoss_GlowMouth");
             int frameHeightMouth = textureMouth.Value.Height / frameCountMouth;
-            int startYMouth = frameHeightMouth * (frameGlowmaskMouth);
+            int startYMouth = frameHeightMouth * (FframeGlowmaskMouth);
             Rectangle sourceRectangleMouth = new Rectangle(0, startYMouth, textureMouth.Value.Width, frameHeightMouth);
 
             spriteBatch.Draw

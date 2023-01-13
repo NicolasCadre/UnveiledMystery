@@ -20,18 +20,22 @@ namespace UnveiledMystery.Enemies.Boss
             DOWN = 2
         }
         private Direction dir = Direction.UP;
-        private int maxStalactite = Main.expertMode ? 5 : 3;
-        private int timerAttackStart = 0;
+        private int maxStalactites = Main.expertMode ? 5 : 3;
+        int timerAttack
+        {
+            get => (int)NPC.ai[0];
+            set => NPC.ai[0] = value;
+        }
         private int timerAttackStartMax = Main.expertMode ? 240 : 300;
-        private int timerShootPlatorm = 100;
+        private int timerShootPlatormMax = 100;
         private int timerBeforeSmash = 0;
         private int timerBeforeSmashMax = Main.expertMode ? 150 : 200;
         private int stalactiteCooldown = 0;
-        private bool hasChangedAttackTimer = false;
+        private bool hasChangedTimerAttack = false;
         private bool hasGeneratedStalactite = false;
         private bool doOnce = false;
-        private NPC Head;
-        private LivingTrapBoss HeadScript;
+        private NPC LivingTrapHead;
+        private LivingTrapBoss LivingTrapHeadScript;
         public List<NPC> Stalactites = new List<NPC>();
         public List<StalactiteNPC> StalactitesScript = new List<StalactiteNPC>();
         List<Player> PlayersInArena = new List<Player>();
@@ -72,10 +76,9 @@ namespace UnveiledMystery.Enemies.Boss
         private void PatternFirstPhase(Vector2 startPosition)
         {
 
-            timerAttackStart++;
-            NPC.ai[0] = timerAttackStart;
+            timerAttack++;
             // Vertically align itself to the targetted player
-            if (timerAttackStart >= timerAttackStartMax)
+            if (timerAttack >= timerAttackStartMax)
             {
                 if (timerBeforeSmash < timerBeforeSmashMax)
                 {
@@ -83,7 +86,7 @@ namespace UnveiledMystery.Enemies.Boss
                     timerBeforeSmash++;
                     NPC.ai[1] = timerBeforeSmash;
                     float playerHeight = Main.player[choosenPlayer.whoAmI].position.Y;
-                    Vector2 moveTo = new Vector2(Head.Center.X - 100, playerHeight);
+                    Vector2 moveTo = new Vector2(LivingTrapHead.Center.X - 100, playerHeight);
                     Vector2 move = moveTo - NPC.Center;
                     float speed = MathHelper.Lerp(2, 5, Vector2.Distance(new Vector2(NPC.Center.X, playerHeight), NPC.Center) / 200);
                     float magnitude = (float)Math.Sqrt(move.X * move.X + move.Y * move.Y);
@@ -104,7 +107,7 @@ namespace UnveiledMystery.Enemies.Boss
                     for (int i = 0; i <= 20; i++)
                         Dust.NewDust(NPC.position + new Vector2(NPC.width - 5, 0), 0, 70, 6, 1);
                     // Smash the wall
-                    if (NPC.Center.X <= Head.Center.X - 700)
+                    if (NPC.Center.X <= LivingTrapHead.Center.X - 700)
                     {
                         SoundEngine.PlaySound(SoundID.Item70);
                         foreach (StalactiteNPC stalactite in StalactitesScript)
@@ -113,7 +116,7 @@ namespace UnveiledMystery.Enemies.Boss
                         Stalactites.Clear();
                         StalactitesScript.Clear();
                         NPC.velocity = new Vector2(0, 0);
-                        hasChangedAttackTimer = false;
+                        hasChangedTimerAttack = false;
                         foreach(Player p in PlayersInArena)
                             p.GetModPlayer<CameraManager>().Shake(20, 50f);
                         for (int i = 0; i <= 10; i++)
@@ -141,7 +144,7 @@ namespace UnveiledMystery.Enemies.Boss
         private void PatternSecondPhase(Vector2 startPosition)
         {
             // Despawn the Stalactites on Phase Transition
-            if (!HeadScript.hasFinishedPhaseTransition)
+            if (!LivingTrapHeadScript.HasFinishedPhaseTransition)
             {
                 foreach (NPC stalactite in Stalactites)
                 {
@@ -153,19 +156,18 @@ namespace UnveiledMystery.Enemies.Boss
                 StalactitesScript.Clear();
                 MovePhase2();
             }
-            else if (HeadScript.hasFinishedPhaseTransition)
+            else if (LivingTrapHeadScript.HasFinishedPhaseTransition)
             {
                 NPC.direction = 1;
                 NPC.spriteDirection = 1;
 
-                timerAttackStart++;
-                NPC.ai[0] = timerAttackStart;
+                timerAttack++;
                 MovePhase2();
-                if (NPC.ai[0] >= timerShootPlatorm)
+                if (timerAttack >= timerShootPlatormMax)
                 {
 
                     NPC.NewNPC(NPC.GetSource_FromAI(), (int)NPC.Center.X, (int)NPC.Center.Y, ModContent.NPCType<LivingTrapBossPlatform>());
-                    timerAttackStart = 0;
+                    timerAttack = 0;
                     dir = (Direction)Main.rand.Next(1, 3);
                     /*timerBeforeSmash++;
                     NPC.ai[1] = timerBeforeSmash;
@@ -229,15 +231,15 @@ namespace UnveiledMystery.Enemies.Boss
             else
             {
                 MovePhase2();
-                hasChangedAttackTimer = false;
+                hasChangedTimerAttack = false;
                 dir = Direction.UP;
             }
         }
         private void MovePhase2()
         {
             //Move the Hands during phase 2; in phase 1
-            if (HeadScript.hasStartedPhaseTransition && !HeadScript.hasFinishedPhaseTransition)
-                NPC.position = new Vector2(Head.Center.X - 1000, Head.Center.Y);
+            if (LivingTrapHeadScript.HasStartedPhaseTransition && !LivingTrapHeadScript.HasFinishedPhaseTransition)
+                NPC.position = new Vector2(LivingTrapHead.Center.X - 1000, LivingTrapHead.Center.Y);
             if (NPC.Center.Y - LivingTrapBossArenaProtector.ArenaCoordinates[2] * 16 <= 80f)
                 dir = Direction.DOWN;
             if (LivingTrapBossArenaProtector.ArenaCoordinates[3] * 16 - 100 - NPC.Center.Y <= 50f)
@@ -292,15 +294,15 @@ namespace UnveiledMystery.Enemies.Boss
         // Place 3 stalactites
         private void GenerateNewStalactites()
         {
-            for (int i = 0; i <= maxStalactite - 1; ++i)
+            for (int i = 0; i <= maxStalactites - 1; ++i)
             {
                 if (Main.netMode != NetmodeID.MultiplayerClient)
                 {
-                    StalactiteX[i] = Main.rand.Next((int)Head.position.X - 650, (int)Head.position.X - 50);
+                    StalactiteX[i] = Main.rand.Next((int)LivingTrapHead.position.X - 650, (int)LivingTrapHead.position.X - 50);
                     NPC.netUpdate = true;
                 }
             }
-            for (int i = 0; i <= maxStalactite - 1; ++i)
+            for (int i = 0; i <= maxStalactites - 1; ++i)
             {
 
                 if (Main.netMode != NetmodeID.MultiplayerClient && Main.netMode != NetmodeID.SinglePlayer)
@@ -309,12 +311,12 @@ namespace UnveiledMystery.Enemies.Boss
                     myPacket.Write((byte)UnveiledMystery.MessageType.SpawnNPCByNPC);
                     myPacket.Write((byte)NPC.whoAmI);
                     myPacket.Write ((int)StalactiteX[i]);
-                    myPacket.Write((int)Head.position.Y + 40);
+                    myPacket.Write((int)LivingTrapHead.position.Y + 40);
                     myPacket.Write((int)ModContent.NPCType<StalactiteNPC>());
                     myPacket.Send();
                 }
                 else
-                    NPC.NewNPC(NPC.GetSource_FromAI(), StalactiteX[i], (int)Head.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
+                    NPC.NewNPC(NPC.GetSource_FromAI(), StalactiteX[i], (int)LivingTrapHead.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
             }
             for (int i = 0; i < Main.maxNPCs; i++)
             {
@@ -346,7 +348,7 @@ namespace UnveiledMystery.Enemies.Boss
 
                         if (Main.netMode != NetmodeID.MultiplayerClient)
                         {
-                            StalactiteX[indexStalactiteX] = Main.rand.Next((int)Head.position.X - 650, (int)Head.position.X - 50);
+                            StalactiteX[indexStalactiteX] = Main.rand.Next((int)LivingTrapHead.position.X - 650, (int)LivingTrapHead.position.X - 50);
                             NPC.netUpdate = true;
 
                         }
@@ -364,7 +366,7 @@ namespace UnveiledMystery.Enemies.Boss
                         }
                         else
                         {*/
-                            replacedStalactite = NPC.NewNPC(NPC.GetSource_FromAI(), StalactiteX[indexStalactiteX], (int)Head.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
+                            replacedStalactite = NPC.NewNPC(NPC.GetSource_FromAI(), StalactiteX[indexStalactiteX], (int)LivingTrapHead.position.Y + 40, ModContent.NPCType<StalactiteNPC>());
                             Stalactites.Add(Main.npc[replacedStalactite]);
                             StalactitesScript.Add((StalactiteNPC)Main.npc[replacedStalactite].ModNPC);
                         //}
@@ -388,8 +390,8 @@ namespace UnveiledMystery.Enemies.Boss
             // Link itself to the Boss' Head
             if (!doOnce)
             {
-                Head = Main.npc.FirstOrDefault(x => x.active && x.type == ModContent.NPCType<LivingTrapBoss>());
-                HeadScript = (LivingTrapBoss)Head.ModNPC;
+                LivingTrapHead = Main.npc.FirstOrDefault(x => x.active && x.type == ModContent.NPCType<LivingTrapBoss>());
+                LivingTrapHeadScript = (LivingTrapBoss)LivingTrapHead.ModNPC;
                 doOnce = true;
                 GenerateNewStalactites();
             }
@@ -397,11 +399,11 @@ namespace UnveiledMystery.Enemies.Boss
             if (!hasGeneratedStalactite)
                 GenerateNewStalactites();
 
-            if (!hasChangedAttackTimer)
+            if (!hasChangedTimerAttack)
             {
-                timerAttackStart = 0;
+                timerAttack = 0;
                 timerBeforeSmash = 0;
-                hasChangedAttackTimer = true;
+                hasChangedTimerAttack = true;
                 PlayersInArena = LivingTrapBossArenaProtector.PlayersInArena;
                 if (PlayersInArena.Count != 0)
                 {
@@ -411,17 +413,17 @@ namespace UnveiledMystery.Enemies.Boss
                         choosenPlayer = PlayersInArena[Main.rand.Next(0, PlayersInArena.Count)];
                 }
             }
-            Vector2 startPosition = new Vector2(Head.position.X + Head.width - NPC.width / 2, Head.position.Y + Head.height - NPC.height / 2);
+            Vector2 startPosition = new Vector2(LivingTrapHead.position.X + LivingTrapHead.width - NPC.width / 2, LivingTrapHead.position.Y + LivingTrapHead.height - NPC.height / 2);
 
             // Disappear when there is no head anymore
-            if (Head == null || !Head.active || Head.life <= 0)
+            if (LivingTrapHead == null || !LivingTrapHead.active || LivingTrapHead.life <= 0)
             {
                 NPC.life = 0;
                 NPC.checkDead();
                 NPC.active = false;
             }
 
-            if (Head.life > Head.lifeMax / 2 && !HeadScript.hasStartedPhaseTransition && !HeadScript.hasFinishedPhaseTransition)
+            if (LivingTrapHead.life > LivingTrapHead.lifeMax / 2 && !LivingTrapHeadScript.HasStartedPhaseTransition && !LivingTrapHeadScript.HasFinishedPhaseTransition)
                 PatternFirstPhase(startPosition);
             else
                 PatternSecondPhase(startPosition);

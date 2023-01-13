@@ -9,7 +9,7 @@ namespace UnveiledMystery.Enemies.Boss
     public class StalactiteNPC : ModNPC
     {
         private bool doOnce = false;
-        private NPC Head;
+        private NPC LivingTrapHead;
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("");
@@ -53,10 +53,10 @@ namespace UnveiledMystery.Enemies.Boss
         {
             if (!doOnce)
             {
-                Head = Main.npc.FirstOrDefault(x => x.active && x.type == ModContent.NPCType<LivingTrapBoss>());
+                LivingTrapHead = Main.npc.FirstOrDefault(x => x.active && x.type == ModContent.NPCType<LivingTrapBoss>());
                 doOnce = true;
             }
-            if (Head == null || !Head.active || Head.life <= 0)
+            if (LivingTrapHead == null || !LivingTrapHead.active || LivingTrapHead.life <= 0)
             {
                 NPC.life = 0;
                 NPC.checkDead();

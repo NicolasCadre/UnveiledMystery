@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace UnveiledMystery.Items
 {
-    internal class AutomaticDartTrapPlayerTier1_item : ModItem
+    internal class AutomaticDartTrapPlayerTier1_Item : ModItem
     {
         public override void SetDefaults()
         {

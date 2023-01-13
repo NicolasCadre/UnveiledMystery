@@ -19,8 +19,8 @@ namespace UnveiledMystery
     public class LivingTrapBossArenaProtector : ModSystem
     {
         public static List<Player> PlayersInArena = new List<Player>();
-        public static Point bossSummonTilePosition;
-        public static int[] ArenaCoordinates = new int[4];
+        public static Point BossSummonTilePosition;
+        public static int[] ArenaCoordinates = new int[4]; // 0 = left X, 1 = right X, 2 = Top Y, 3 = Bottom Y
         public static List<Tile> ArenaTiles = new List<Tile>();
         private bool check = false;
         private Player[] players;
@@ -75,7 +75,7 @@ namespace UnveiledMystery
 
                     if (TimerCheckCoordinate > 120)
                     {
-                        if (bossSummonTilePosition.X == 0 && bossSummonTilePosition.Y == 0)
+                        if (BossSummonTilePosition.X == 0 && BossSummonTilePosition.Y == 0)
                         {
                             players = Main.player;
                             foreach (Player p in players)
@@ -88,15 +88,15 @@ namespace UnveiledMystery
                                         {
                                             if (Main.tile[x, y].TileType == ModContent.TileType<LivingTrapSummonAltar_Tile>())
                                             {
-                                                bossSummonTilePosition = new Point(x, y + 2);
+                                                BossSummonTilePosition = new Point(x, y + 2);
                                                 Point arenaLenght = new Vector2(3000, 432).ToTileCoordinates();
-                                                Point ArenaPositionAndLenght = new Point(bossSummonTilePosition.X - arenaLenght.X, bossSummonTilePosition.Y - arenaLenght.Y - 1);
+                                                Point ArenaPositionAndLenght = new Point(BossSummonTilePosition.X - arenaLenght.X, BossSummonTilePosition.Y - arenaLenght.Y - 1);
 
                                                 ArenaCoordinates[0] = ArenaPositionAndLenght.X;
-                                                ArenaCoordinates[1] = bossSummonTilePosition.X - 28;
+                                                ArenaCoordinates[1] = BossSummonTilePosition.X - 28;
 
                                                 ArenaCoordinates[2] = ArenaPositionAndLenght.Y;
-                                                ArenaCoordinates[3] = bossSummonTilePosition.Y - 1;
+                                                ArenaCoordinates[3] = BossSummonTilePosition.Y - 1;
                                             }
                                         }
                                     }
@@ -110,7 +110,7 @@ namespace UnveiledMystery
                 }
                 else
                 {
-                    if (bossSummonTilePosition.X > 0 && bossSummonTilePosition.Y > 0)
+                    if (BossSummonTilePosition.X > 0 && BossSummonTilePosition.Y > 0)
                     {
                         for (int x = ArenaCoordinates[0]; x <= ArenaCoordinates[1]; x++)
                         {
@@ -153,7 +153,7 @@ namespace UnveiledMystery
                         if (item.position.ToTileCoordinates().Y <= ArenaCoordinates[3] && item.position.ToTileCoordinates().Y >= ArenaCoordinates[2])
                         {
                             if (Main.tile[item.position.ToTileCoordinates()].HasTile)
-                                item.position = bossSummonTilePosition.ToWorldCoordinates() - new Vector2(0, 50);
+                                item.position = BossSummonTilePosition.ToWorldCoordinates() - new Vector2(0, 50);
                         }
                     }
                 }

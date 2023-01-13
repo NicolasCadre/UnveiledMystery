@@ -28,7 +28,7 @@ namespace UnveiledMystery.Enemies
         float timerFloat = 60;
         const float TIMERFLOATMAX = 120;
         Direction timerFloatDirection = Direction.UP;
-        public Player targetPlayer;
+        public Player TargetPlayer;
         const float VERTICALPOSITION = 400;
         public override void SetDefaults()
         {

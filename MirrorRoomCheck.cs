@@ -19,7 +19,7 @@ namespace UnveiledMystery
     {
         public static List<Player> PlayersCurrentlyInRoom = new List<Player>();
         private Point CheckTilePosition;
-        public static int[] RoomCoordinate = new int[4];
+        public static int[] RoomCoordinate = new int[4]; // 0 = left X, 1 = right X, 2 = Top Y, 3 = Bottom Y
         private Player[] players;
         private int TimerCheckCoordinate = 0;
         private int TimerCheckPlayer = 0;
@@ -115,7 +115,7 @@ namespace UnveiledMystery
                             PlayersCurrentlyInRoom.Add(Main.player[currentPlayer.whoAmI]);
                             int newGhost = NPC.NewNPC(player.GetSource_FromAI(), (int)player.position.X, (int)player.position.Y - 200, ModContent.NPCType<MirrorGhost>());
                             MirrorGhost GhostScript = (MirrorGhost)Main.npc[newGhost].ModNPC;
-                            GhostScript.targetPlayer = currentPlayer;
+                            GhostScript.TargetPlayer = currentPlayer;
                             Ghosts.Add(Main.npc[newGhost]);
                             for (int i = 0; i <= 20; i++)
                             {
@@ -137,7 +137,7 @@ namespace UnveiledMystery
                                 foreach (NPC ghost in Ghosts.ToList())
                                 {
                                     MirrorGhost GhostScript = (MirrorGhost)ghost.ModNPC;
-                                    if(GhostScript.targetPlayer == currentPlayer)
+                                    if(GhostScript.TargetPlayer == currentPlayer)
                                     {
                                         for(int i =0; i <= 20; i++)
                                         {

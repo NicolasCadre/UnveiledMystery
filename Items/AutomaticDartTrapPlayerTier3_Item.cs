@@ -4,7 +4,7 @@ using Terraria.ModLoader;
 
 namespace UnveiledMystery.Items
 {
-    internal class AutomaticDartTrapPlayerTier3_item : ModItem
+    internal class AutomaticDartTrapPlayerTier3_Item : ModItem
     {
         public override void SetDefaults()
         {
@@ -25,12 +25,12 @@ namespace UnveiledMystery.Items
         {
             Recipe recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.TitaniumBar, 5);
-            recipe.AddIngredient(ModContent.ItemType<AutomaticDartTrapPlayerTier2_item>(), 1);
+            recipe.AddIngredient(ModContent.ItemType<AutomaticDartTrapPlayerTier2_Item>(), 1);
             recipe.AddTile(ModContent.TileType<Tiles.TurretCraftingStation_Tile>());
             recipe.Register();
             recipe = CreateRecipe();
             recipe.AddIngredient(ItemID.AdamantiteBar, 5);
-            recipe.AddIngredient(ModContent.ItemType<AutomaticDartTrapPlayerTier2_item>(), 1);
+            recipe.AddIngredient(ModContent.ItemType<AutomaticDartTrapPlayerTier2_Item>(), 1);
             recipe.AddTile(ModContent.TileType<Tiles.TurretCraftingStation_Tile>());
             recipe.Register();
         }

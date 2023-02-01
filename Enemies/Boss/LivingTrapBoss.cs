@@ -13,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using UnveiledMystery.Tiles;
+using Terraria.GameContent.ItemDropRules;
+using UnveiledMystery.Items;
 
 namespace UnveiledMystery.Enemies.Boss
 {
@@ -605,6 +607,32 @@ namespace UnveiledMystery.Enemies.Boss
                 0f
             );
 
+        }
+
+        public override void ModifyNPCLoot(NPCLoot npcLoot)
+        {
+            // Do NOT misuse the ModifyNPCLoot and OnKill hooks: the former is only used for registering drops, the latter for everything else
+
+            // Add the treasure bag using ItemDropRule.BossBag (automatically checks for expert mode)
+            npcLoot.Add(ItemDropRule.BossBag(ModContent.ItemType<LivingTrapBossBag>()));
+
+            // TODO : Trophy
+            //npcLoot.Add(ItemDropRule.Common(ModContent.ItemType<Items.Placeable.Furniture.MinionBossTrophy>(), 10));
+
+            // TODO : Master Mode Boss Relic
+            //npcLoot.Add(ItemDropRule.MasterModeCommonDrop(ModContent.ItemType<Items.Placeable.Furniture.MinionBossRelic>()));
+
+            npcLoot.Add(ItemDropRule.MasterModeDropOnAllPlayers(ModContent.ItemType<LivingTrapMinion_Item>()));
+
+            // All our drops here are based on "not expert", meaning we use .OnSuccess() to add them into the rule, which then gets added
+            LeadingConditionRule notExpertRule = new LeadingConditionRule(new Conditions.NotExpert());
+
+            // Notice we use notExpertRule.OnSuccess instead of npcLoot.Add so it only applies in normal mode
+            // Boss masks are spawned with 1/7 chance
+            notExpertRule.OnSuccess(ItemDropRule.Common(ModContent.ItemType<TurretCraftingStation_Item>()));
+
+            // Finally add the leading rule
+            npcLoot.Add(notExpertRule);
         }
     }
 }

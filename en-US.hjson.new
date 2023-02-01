@@ -1,0 +1,84 @@
+
+Mods: {
+	UnveiledMystery: {
+		Biomes.LivingTrapDungeonBIome.DisplayName: Strange Temple
+
+		Buffs: {
+			LivingTrapCurse: {
+				DisplayName: LivingTrapCurse
+				Description: Prevent you for mining, building and using Rod of Discord
+			}
+
+			LivingTrapMinion_Buff: {
+				DisplayName: Example Minion
+				Description: The example minion will fight for you
+			}
+		}
+
+		NPCs: {
+			LivingTrapBoss.DisplayName: Living Trap
+			LivingTrapBossHand.DisplayName: Living Trap Hand
+			LivingTrapBossPlatform.DisplayName: Living Trap Boss Platform
+			MirrorGhost.DisplayName: Mirror Ghost
+		}
+
+		Projectiles: {
+			LivingTrapMinion_Projectile.DisplayName: Minion Boss Pet
+			AutomaticPlayerDartTrapHomingProjectile.DisplayName: Turret Homing Projectile
+			LivingTrapBigLaser.DisplayName: Living Trap Big Laser
+			LivingTrapBouncingProjectile.DisplayName: Boss Bouncing Bullet
+			LivingTrapLaser.DisplayName: Living Trap Laser
+			LivingTrapProjectileFromLaser.DisplayName: Living Trap Projectile From Laser
+			LivingTrapProjectileFromLaserWarning.DisplayName: Living Trap Projectile From Laser Warning
+			SplittingLaserProjectile.DisplayName: Splitting Laser Projectile
+			SplittingLaserSingleProjectile.DisplayName: Splitting Laser Single Projectile
+			StalactiteProjectile.DisplayName: Stalactites
+		}
+
+		Items: {
+			AutomaticBoulderTrap_Item.DisplayName: Automatic Boulder Trap_ Item
+			AutomaticDartTrap_Item.DisplayName: Automatic Dart Trap_ Item
+			AutomaticDartTrapPlayerTier1_Item.DisplayName: Automatic Dart Trap Player Tier1_ Item
+			AutomaticDartTrapPlayerTier2_Item.DisplayName: Automatic Dart Trap Player Tier2_ Item
+			AutomaticDartTrapPlayerTier3_Item.DisplayName: Automatic Dart Trap Player Tier3_ Item
+			AutomaticDartTrapPlayerTier4_Item.DisplayName: Automatic Dart Trap Player Tier4_ Item
+			AutomaticDartTrapRain_Item.DisplayName: Automatic Dart Trap Rain_ Item
+			BossKey_Item.DisplayName: Strange Door Key
+
+			BossKeyPart_Item: {
+				DisplayName: Strange Door Key Part
+				Tooltip: Looks like it's broken in 3 parts
+			}
+
+			InvisibleTileItem.DisplayName: Invisible Tile Item
+			LivingTrapArenaTrapDoor_Item.DisplayName: Living Trap Arena Trap Door_ Item
+
+			LivingTrapBossBag: {
+				DisplayName: Treasure Bag
+				Tooltip: "{$CommonItemTooltip.RightClickToOpen}"
+			}
+
+			LivingTrapBossDoor_Item.DisplayName: Living Trap Boss Door_ Item
+
+			LivingTrapMinion_Item: {
+				DisplayName: Minion Boss Pet
+				Tooltip: Summons a miniature Minion Boss to follow you
+			}
+
+			LivingTrapSummonAltar_Item.DisplayName: Living Trap Summon Altar_ Item
+			RoomChoserItem.DisplayName: Room Choser Item
+			TileCheckMirrorRoomItem.DisplayName: Tile Check Mirror Room Item
+			TurretCraftingStation_Item.DisplayName: Turret Crafting Station_ Item
+
+			RandomSword: {
+				DisplayName: Random Sword
+				Tooltip: This is a Random sword.
+			}
+
+			SplittingLaserWeapon: {
+				DisplayName: Splitting Laser Weapon
+				Tooltip: Shoot a laser beam splitting itself perpendicularly
+			}
+		}
+	}
+}

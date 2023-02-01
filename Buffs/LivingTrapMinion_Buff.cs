@@ -15,6 +15,7 @@ namespace UnveiledMystery.Buffs
             Description.SetDefault("The example minion will fight for you");
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
+            Main.vanityPet[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)

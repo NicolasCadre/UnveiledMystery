@@ -54,7 +54,7 @@ namespace UnveiledMystery.Projectiles
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             for (int i = 0; i <= 10; i++)
-                Dust.NewDust(Projectile.position + new Vector2(0, 20), 16, 10, 1);
+                Dust.NewDust(Projectile.position + new Vector2(0, 20), 16, 10, DustID.Stone);
             SoundEngine.PlaySound(SoundID.Item10, Projectile.position);
             return true;
 

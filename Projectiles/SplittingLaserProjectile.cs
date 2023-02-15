@@ -22,11 +22,11 @@ namespace UnveiledMystery.Projectiles
         private const float LASER_DISTANCE_FROM_PLAYER = 10;
         private const float LASER_MAXDISTANCE = 200;
 
-        private const float TIMER_MAX = 4f;
+        private const float TIMER_MAX = 2f;
 
         private int howManyLaser = 0;
 
-        private const int STEP = 20;
+        private const int STEP = 10;
 
         private int laserNumber = 1;
 
@@ -141,7 +141,7 @@ namespace UnveiledMystery.Projectiles
                 var laserPos = Vector2.Lerp(startPos, endPos, (float)laserNumber/howManyLaser);
                 Vector2 dir = Projectile.velocity.RotatedBy(MathHelper.ToRadians(laserNumber % 2 ==0 ? 90 : -90));
 
-                Projectile.NewProjectile(Projectile.GetSource_FromAI(), laserPos.X, laserPos.Y, dir.X, dir.Y, ModContent.ProjectileType<Projectiles.SplittingLaserSingleProjectile>(), 10 , 0f, Projectile.owner);
+                Projectile.NewProjectile(Projectile.GetSource_FromAI(), laserPos.X, laserPos.Y, dir.X, dir.Y, ModContent.ProjectileType<Projectiles.SplittingLaserSingleProjectile>(), 15 , 0f, Projectile.owner);
                 Timer = 0;
                 laserNumber++;
 
@@ -161,7 +161,7 @@ namespace UnveiledMystery.Projectiles
                 float num1 = Projectile.velocity.ToRotation() + (Main.rand.Next(2) == 1 ? -1.0f : 1.0f) * 1.57f;
                 float num2 = (float)(Main.rand.NextDouble() * 0.8f + 1.0f);
                 Vector2 dustVel = new Vector2((float)Math.Cos(num1) * num2, (float)Math.Sin(num1) * num2);
-                Dust dust = Main.dust[Dust.NewDust(dustPos, 0, 0, 226, dustVel.X, dustVel.Y)];
+                Dust dust = Main.dust[Dust.NewDust(dustPos, 0, 0, DustID.Electric, dustVel.X, dustVel.Y)];
                 dust.noGravity = true;
                 dust.scale = 1.2f;
                 /*dust = Dust.NewDustDirect(startPos, 0, 0, 31,
@@ -175,12 +175,12 @@ namespace UnveiledMystery.Projectiles
             if (Main.rand.NextBool(5))
             {
                 Vector2 offset = Projectile.velocity.RotatedBy(1.57f) * ((float)Main.rand.NextDouble() - 0.5f) * Projectile.width;
-                Dust dust = Main.dust[Dust.NewDust(dustPos + offset - Vector2.One * 4f, 8, 8, 31, 0.0f, 0.0f, 100, new Color(), 1.5f)];
+                Dust dust = Main.dust[Dust.NewDust(dustPos + offset - Vector2.One * 4f, 8, 8, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f)];
                 dust.velocity *= 0.5f;
                 dust.velocity.Y = -Math.Abs(dust.velocity.Y);
                 unit = dustPos - startPos;
                 unit.Normalize();
-                dust = Main.dust[Dust.NewDust(startPos + 55 * unit, 8, 8, 31, 0.0f, 0.0f, 100, new Color(), 1.5f)];
+                dust = Main.dust[Dust.NewDust(startPos + 55 * unit, 8, 8, DustID.Smoke, 0.0f, 0.0f, 100, new Color(), 1.5f)];
                 dust.velocity = dust.velocity * 0.5f;
                 dust.velocity.Y = -Math.Abs(dust.velocity.Y);
             }

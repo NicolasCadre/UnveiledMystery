@@ -58,8 +58,6 @@ namespace UnveiledMystery.Enemies.Boss
             NPC.lifeMax = 1;
             NPC.damage = 100;
 
-            NPC.value = Item.buyPrice(gold: 10);
-
             NPC.noTileCollide = true;
             NPC.noGravity = true;
             NPC.lavaImmune = true;
@@ -96,7 +94,7 @@ namespace UnveiledMystery.Enemies.Boss
                     }
                     NPC.velocity = move;
                     for (int i = 0; i <= 5; i++)
-                        Dust.NewDust(NPC.position + new Vector2(NPC.width - 5, 10), 0, 50, 6, 10);
+                        Dust.NewDust(NPC.position + new Vector2(NPC.width - 5, 10), 0, 50, DustID.Torch, 10);
                 }
                 // Rush to the left side of the arena
                 else
@@ -105,7 +103,7 @@ namespace UnveiledMystery.Enemies.Boss
                     NPC.velocity.X = -15;
                     NPC.velocity.Y = 0;
                     for (int i = 0; i <= 20; i++)
-                        Dust.NewDust(NPC.position + new Vector2(NPC.width - 5, 0), 0, 70, 6, 1);
+                        Dust.NewDust(NPC.position + new Vector2(NPC.width - 5, 0), 0, 70, DustID.Torch, 1);
                     // Smash the wall
                     if (NPC.Center.X <= LivingTrapHead.Center.X - 700)
                     {

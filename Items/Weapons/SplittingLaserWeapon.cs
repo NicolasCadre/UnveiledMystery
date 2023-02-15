@@ -13,6 +13,7 @@ namespace UnveiledMystery.Items.Weapons
     {
         public override void SetStaticDefaults()
         {
+            DisplayName.SetDefault("Laser Splitter");
             Tooltip.SetDefault("Shoot a laser beam splitting itself perpendicularly");
         }
 
@@ -27,8 +28,8 @@ namespace UnveiledMystery.Items.Weapons
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.noMelee = true;
             Item.knockBack = 0;
-            Item.value = 10000;
-            Item.rare = ItemRarityID.LightRed;
+            Item.value = Item.sellPrice(gold: 1, silver : 50);
+            Item.rare = ItemRarityID.Orange;
             Item.UseSound = SoundID.Item71;
             Item.autoReuse = true;
             Item.shoot = ModContent.ProjectileType<SplittingLaserProjectile>();

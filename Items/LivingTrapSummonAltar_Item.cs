@@ -1,4 +1,5 @@
 ﻿using Terraria.ID;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace UnveiledMystery.Items
@@ -17,7 +18,7 @@ namespace UnveiledMystery.Items
             Item.createTile = ModContent.TileType<Tiles.LivingTrapSummonAltar_Tile>();
             Item.width = 10;
             Item.height = 24;
-            Item.value = 500;
+            Item.value = 0;
         }
     }
 }

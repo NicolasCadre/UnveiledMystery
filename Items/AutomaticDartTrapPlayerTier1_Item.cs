@@ -6,6 +6,11 @@ namespace UnveiledMystery.Items
 {
     internal class AutomaticDartTrapPlayerTier1_Item : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Stone Dart Turret");
+            Tooltip.SetDefault("Shoots darts dealing 30 damages every 2 seconds.");
+        }
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.Swing;
@@ -13,6 +18,7 @@ namespace UnveiledMystery.Items
             Item.useAnimation = 15;
             Item.useTime = 10;
             Item.autoReuse = false;
+            Item.rare = ItemRarityID.Orange;
             Item.maxStack = 100;
             Item.consumable = true;
             Item.createTile = ModContent.TileType<Tiles.AutomaticDartTrapPlayerTier1_Tile>();

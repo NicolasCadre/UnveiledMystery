@@ -76,7 +76,7 @@ namespace UnveiledMystery.Enemies
             NPC.position.Y = ghostBaseHeight;
 
             Vector2 Dustspeed = Main.rand.NextVector2Unit((float)MathHelper.Pi / 4, (float)MathHelper.Pi / 3) * Main.rand.NextFloat();
-            Dust.NewDust(NPC.Center + new Vector2(0, NPC.height / 2), 0, 0, 59, Dustspeed.X *0.5f, Dustspeed.Y *0.5f);
+            Dust.NewDust(NPC.Center + new Vector2(0, NPC.height / 2), 0, 0, DustID.BlueTorch, Dustspeed.X *0.5f, Dustspeed.Y *0.5f);
         }
     }
 }

@@ -6,6 +6,12 @@ namespace UnveiledMystery.Items
 {
     internal class AutomaticDartTrapPlayerTier2_Item : ModItem
     {
+
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Hellstone Turret");
+            Tooltip.SetDefault("Shoots explosive bullets dealing 60 damages every second.");
+        }
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.Swing;
@@ -15,6 +21,7 @@ namespace UnveiledMystery.Items
             Item.autoReuse = false;
             Item.maxStack = 100;
             Item.consumable = true;
+            Item.rare = ItemRarityID.Orange;
             Item.createTile = ModContent.TileType<Tiles.AutomaticDartTrapPlayerTier2_Tile>();
             Item.width = 16;
             Item.height = 16;

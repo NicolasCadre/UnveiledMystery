@@ -70,7 +70,7 @@ namespace UnveiledMystery.Projectiles
             for (int i = 0; i <= Main.rand.Next(3, 6); i++)
             {
                 Vector2 Speed = Main.rand.NextVector2Circular(2f, 2f);
-                Dust.NewDust(Projectile.position, 0, 0, 74, Speed.X, Speed.Y);
+                Dust.NewDust(Projectile.position, 0, 0, DustID.GreenFairy, Speed.X, Speed.Y);
 
             }
             Projectile.penetrate--;

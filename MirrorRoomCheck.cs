@@ -120,7 +120,7 @@ namespace UnveiledMystery
                             for (int i = 0; i <= 20; i++)
                             {
                                 Vector2 speed = Main.rand.NextVector2Circular(0.5f, 1f);
-                                Dust.NewDust(Main.npc[newGhost].Center, 0, 0, 59, speed.X, speed.Y);
+                                Dust.NewDust(Main.npc[newGhost].Center, 0, 0, DustID.BlueTorch, speed.X, speed.Y);
                             }
 
                         }

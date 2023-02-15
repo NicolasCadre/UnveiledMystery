@@ -92,7 +92,7 @@ namespace UnveiledMystery.Enemies.Boss
             NPC.defense = 20;
             NPC.knockBackResist = 0f;
 
-            NPC.value = Item.buyPrice(gold: 10);
+            NPC.value = Item.buyPrice(gold: 8);
 
             NPC.lavaImmune = true;
             NPC.noTileCollide = true;
@@ -207,7 +207,7 @@ namespace UnveiledMystery.Enemies.Boss
                 if (type == ProjectileType.BOUNCING)
                 {
                     FrameGlowmaskEye = 0;
-                    Dust.NewDust(NPC.Center - new Vector2(0, 140), 30, 30, 131);
+                    Dust.NewDust(NPC.Center - new Vector2(0, 140), 30, 30, DustID.Fireworks);
                 }
                 else if (type == ProjectileType.TRIPLE)
                 {

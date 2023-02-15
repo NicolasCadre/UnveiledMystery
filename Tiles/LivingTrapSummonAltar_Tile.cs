@@ -52,7 +52,6 @@ namespace UnveiledMystery.Tiles
         // Spawn the Boss on the wall to the right of the arena
         public override bool RightClick(int i, int j)
         {
-            Vector2 floorHeight;
             Vector2 BossLocation;
             float BossI;
             float BossJ;
@@ -79,7 +78,7 @@ namespace UnveiledMystery.Tiles
 
             }
             //int index = NPC.NewNPC(player.GetSource_FromAI(), (int)BossLocation.X, (int)BossLocation.Y, ModContent.NPCType<LivingTrapBoss>());
-            if (Main.netMode == 0)
+            if (Main.netMode == NetmodeID.SinglePlayer)
                 NPC.NewNPC(player.GetSource_FromAI(), (int)BossLocation.X, (int)BossLocation.Y, ModContent.NPCType<LivingTrapBoss>());
             else
             {

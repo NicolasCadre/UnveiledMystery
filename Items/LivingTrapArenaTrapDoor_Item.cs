@@ -17,7 +17,7 @@ namespace UnveiledMystery.Items
             Item.createTile = ModContent.TileType<Tiles.LivingTrapArenaTrapDoor_Tile>();
             Item.width = 10;
             Item.height = 24;
-            Item.value = 500;
+            Item.value = 0;
         }
     }
 }

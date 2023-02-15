@@ -13,8 +13,8 @@ namespace UnveiledMystery.Items
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Minion Boss Pet");
-            Tooltip.SetDefault("Summons a miniature Minion Boss to follow you");
+            DisplayName.SetDefault("Miniature Living Trap");
+            Tooltip.SetDefault("Kinda cute, maybe");
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
 

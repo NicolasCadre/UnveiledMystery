@@ -3,7 +3,6 @@ using Terraria;
 using Terraria.ID;
 using Terraria.GameContent.Creative;
 using Terraria.ModLoader;
-using Terraria;
 using UnveiledMystery.Buffs;
 using System;
 namespace UnveiledMystery.Enemies
@@ -11,6 +10,7 @@ namespace UnveiledMystery.Enemies
     public class LivingTrapMinion_Projectile : ModProjectile
     {
         bool canJump = false;
+        bool shouldJumpHigher = false;
         private float timerBeforeJump
         {
             get => Projectile.ai[0];
@@ -106,24 +106,67 @@ namespace UnveiledMystery.Enemies
             float speed = vector.Length()/100;
             vector.Normalize();
             vector *= speed;
-
+            Vector2 velocity;
             Point tilePosition = (Projectile.Center + new Vector2(0, Projectile.height / 2)).ToTileCoordinates();
 
             if(player.position.X < Projectile.position.X)
             {
                 Projectile.spriteDirection = 1;
                 if (WorldGen.SolidOrSlopedTile(tilePosition.X - 2, tilePosition.Y))
-                    Projectile.velocity = (Projectile.velocity + new Vector2(+10, -2));
+                {
+                    if(shouldJumpHigher)
+                    {
+                        velocity = Projectile.velocity + new Vector2(+3, -5);
+                        shouldJumpHigher = false;
+                    }
+                    else
+                        velocity = Projectile.velocity + new Vector2(+3, -2);
+
+                    Projectile.velocity = velocity;
+                    shouldJumpHigher = true;
+
+                }
                 else
-                    Projectile.velocity = (Projectile.velocity + vector + new Vector2(0, -2));
+                {
+                    if (shouldJumpHigher)
+                    {
+                        velocity = Projectile.velocity + (player.position.Y <= Projectile.position.Y ? vector : new Vector2(vector.X, 0)) + new Vector2(0, -5);
+                        shouldJumpHigher = false;
+                    }
+                    else
+                        velocity = Projectile.velocity + (player.position.Y <= Projectile.position.Y ? vector : new Vector2(vector.X, 0)) + new Vector2(0, -2);
+                    Projectile.velocity = velocity;
+
+                }
             }
             else if (player.position.X > Projectile.position.X)
             {
                 Projectile.spriteDirection = -1;
                 if (WorldGen.SolidOrSlopedTile(tilePosition.X + 2, tilePosition.Y))
-                    Projectile.velocity = (Projectile.velocity + new Vector2(-10, -2));
+                {
+                    if (shouldJumpHigher)
+                    {
+                        velocity = Projectile.velocity + new Vector2(-3, -5);
+                        shouldJumpHigher = false;
+                    }
+                    else
+                        velocity = Projectile.velocity + new Vector2(-3, -2);
+
+                    Projectile.velocity = velocity;
+                    shouldJumpHigher = true;
+                }
                 else
-                    Projectile.velocity = (Projectile.velocity + vector + new Vector2(0, -2));
+                {
+                    if (shouldJumpHigher)
+                    {
+                        velocity = Projectile.velocity + (player.position.Y <= Projectile.position.Y ? vector : new Vector2(vector.X, 0)) + new Vector2(0, -5);
+                        shouldJumpHigher = false;
+                    }
+                    else
+                        velocity = Projectile.velocity + (player.position.Y <= Projectile.position.Y ? vector : new Vector2(vector.X, 0)) + new Vector2(0, -2);
+                    Projectile.velocity = velocity;
+
+                }
             }
 
 

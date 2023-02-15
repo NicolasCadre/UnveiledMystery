@@ -13,41 +13,44 @@ namespace UnveiledMystery.Items.Weapons
         enum RandomEffect
         {
             ONFIRE = 1,
-            EVERYTHINGATONCE = 2,
+            VENOMING = 2,
             KNOCKBACK = 3,
             POISON = 4,
             ICHORING = 5,
             BURNING = 6,
             CONFUSING = 7,
             CURSEDINFERNO = 8,
-            VENOMING = 9
+            EVERYTHINGATONCE = 9
+
         }
 
         private RandomEffect effect;
         private RandomEffect previousEffect;
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("This is a Random sword."); // The (English) text shown below your weapon's name.
+            DisplayName.SetDefault("Sword of Randomness");
+            Tooltip.SetDefault("Each swing triggers one of nine random effect."); 
 
             CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
         public override void SetDefaults()
         {
-            Item.width = 40; // The item texture's width.
-            Item.height = 40; // The item texture's height.
+            Item.width = 80; 
+            Item.height = 80; 
 
-            Item.useStyle = ItemUseStyleID.Swing; // The useStyle of the Item.
-            Item.useTime = 40; // The time span of using the weapon. Remember in terraria, 60 frames is a second.
-            Item.useAnimation = 40; // The time span of the using animation of the weapon, suggest setting it the same as useTime.
-            Item.autoReuse = true; // Whether the weapon can be used more than once automatically by holding the use button.
+            Item.useStyle = ItemUseStyleID.Swing; 
+            Item.useTime = 35; 
+            Item.useAnimation = 35; 
+            Item.autoReuse = true; 
 
-            Item.DamageType = DamageClass.Melee; // Whether your item is part of the melee class.
-            Item.damage = 1; // The damage your item deals.
-            Item.knockBack = 2; // The force of knockback of the weapon. Maximum is 20
-            Item.crit = 0; // The critical strike chance the weapon has. The player, by default, has a 4% critical strike chance.
+            Item.DamageType = DamageClass.Melee; 
+            Item.damage = 30; 
+            Item.knockBack = 2; 
+            Item.crit = 0; 
 
-            Item.value = Item.buyPrice(silver: 1); // The value of the weapon in copper coins.
-            Item.UseSound = SoundID.Item1; // The sound when the weapon is being used.
+            Item.value = Item.sellPrice(gold: 2);
+            Item.rare = ItemRarityID.Orange;
+            Item.UseSound = SoundID.Item1; 
         }
 
         public override bool? UseItem(Player player)
@@ -56,39 +59,49 @@ namespace UnveiledMystery.Items.Weapons
             effect = (RandomEffect)Main.rand.Next(1, 10);
             while (effect == previousEffect)
                 effect = (RandomEffect)Main.rand.Next(1, 10);
+            previousEffect = effect;
+            Rectangle textPos = new Rectangle((int)player.position.X, (int)player.position.Y - 20, player.width, player.height);
             switch (effect)
             {
                 case RandomEffect.ONFIRE:
                     Item.knockBack = 2;
                     SoundEngine.PlaySound(SoundID.Item20);
+                    CombatText.NewText(textPos, Color.OrangeRed, 1, false, false);
                     break;
                 case RandomEffect.EVERYTHINGATONCE:
                     Item.knockBack = player.GetWeaponKnockback(Item) + 100;
                     player.GetModPlayer<CameraManager>().Shake(25, 20f);
+                    CombatText.NewText(textPos, Color.HotPink, 9, true, false);
                     SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Items/RandomSwordSpecial"));
                     break;
                 case RandomEffect.KNOCKBACK:
                     Item.knockBack = player.GetWeaponKnockback(Item) + 100;
+                    CombatText.NewText(textPos, Color.White, 3, false, false);
                     SoundEngine.PlaySound(new SoundStyle("UnveiledMystery/Sounds/Items/RandomSwordKnockback"));
                     break;
                 case RandomEffect.POISON:
                     Item.knockBack = 2;
+                    CombatText.NewText(textPos, Color.LimeGreen, 4, false, false);
                     SoundEngine.PlaySound(SoundID.Item44);
                     break;
                 case RandomEffect.ICHORING:
                     Item.knockBack = 2;
+                    CombatText.NewText(textPos, Color.Yellow, 5, false, false);
                     SoundEngine.PlaySound(SoundID.NPCDeath19);
                     break;
                 case RandomEffect.BURNING:
                     Item.knockBack = 2;
+                    CombatText.NewText(textPos, Color.OrangeRed, 6, false, false);
                     SoundEngine.PlaySound(SoundID.Item34);
                     break;
                 case RandomEffect.CONFUSING:
                     Item.knockBack = 2;
+                    CombatText.NewText(textPos, Color.Salmon, 7, false, false);
                     SoundEngine.PlaySound(SoundID.Item9);
                     break;
                 case RandomEffect.CURSEDINFERNO:
                     Item.knockBack = 2;
+                    CombatText.NewText(textPos, Color.LightGreen, 8, false, false);
                     SoundEngine.PlaySound(SoundID.Item20 with
                     {
                         Pitch = -1f
@@ -96,6 +109,7 @@ namespace UnveiledMystery.Items.Weapons
                     break;
                 case RandomEffect.VENOMING:
                     Item.knockBack = 2;
+                    CombatText.NewText(textPos, Color.MediumPurple, 2, false, false);
                     SoundEngine.PlaySound(SoundID.Item43);
                     break;
             }

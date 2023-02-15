@@ -26,8 +26,6 @@ namespace UnveiledMystery.Enemies.Boss
             NPC.lifeMax = 1;
             NPC.friendly = true;
 
-            NPC.value = Item.buyPrice(copper: 0);
-
             NPC.noTileCollide = true;
             NPC.noGravity = true;
             NPC.lavaImmune = true;

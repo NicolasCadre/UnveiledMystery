@@ -6,6 +6,12 @@ namespace UnveiledMystery.Items
 {
     internal class AutomaticDartTrapPlayerTier3_Item : ModItem
     {
+        public override void SetStaticDefaults()
+        {
+            DisplayName.SetDefault("Machinegun Turret");
+            Tooltip.SetDefault("Shoots explosive bullets dealing 60 damages every half a second.");
+        }
+
         public override void SetDefaults()
         {
             Item.useStyle = ItemUseStyleID.Swing;
@@ -15,6 +21,7 @@ namespace UnveiledMystery.Items
             Item.autoReuse = false;
             Item.maxStack = 100;
             Item.consumable = true;
+            Item.rare = ItemRarityID.LightRed;
             Item.createTile = ModContent.TileType<Tiles.AutomaticDartTrapPlayerTier3_Tile>();
             Item.width = 16;
             Item.height = 16;

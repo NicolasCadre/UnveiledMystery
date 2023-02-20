@@ -9,7 +9,7 @@ namespace UnveiledMystery.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Stone Dart Turret");
-            Tooltip.SetDefault("Shoots darts dealing 30 damages every 2 seconds.");
+            Tooltip.SetDefault("Shoots darts dealing 50 damages every 2 seconds.");
         }
         public override void SetDefaults()
         {

@@ -10,7 +10,7 @@ namespace UnveiledMystery.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Hellstone Turret");
-            Tooltip.SetDefault("Shoots explosive bullets dealing 60 damages every second.");
+            Tooltip.SetDefault("Shoots explosive bullets dealing 30 damages every second in a small area.");
         }
         public override void SetDefaults()
         {

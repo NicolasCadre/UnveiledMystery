@@ -9,7 +9,7 @@ namespace UnveiledMystery.Items
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Machinegun Turret");
-            Tooltip.SetDefault("Shoots explosive bullets dealing 60 damages every half a second.");
+            Tooltip.SetDefault("Shoots explosive bullets dealing 60 damages every half a second in a small area.");
         }
 
         public override void SetDefaults()

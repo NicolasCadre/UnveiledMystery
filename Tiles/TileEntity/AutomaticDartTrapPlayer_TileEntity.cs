@@ -3,15 +3,22 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Localization;
 using System.Linq;
-using Terraria.Chat;
 using UnveiledMystery.Projectiles;
+using System.Collections.Generic;
 
 namespace UnveiledMystery.Tiles.TileEntity
 {
+    enum direction
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
     public class AutomaticDartTrapPlayer_TileEntity : ModTileEntity
     {
+
         private int timer = 0; 
         private const int TILEACTIVATIONRADIUS = 1000;
         private int cadence = 60;
@@ -21,6 +28,9 @@ namespace UnveiledMystery.Tiles.TileEntity
         private int projectile = 0;
         private int damage = 0;
         private float speed = 1;
+        private bool runOnce;
+        private List<direction> blockedDirection = new List<direction>();
+        
         public override bool IsTileValidForEntity(int i, int j)
         {
             Tile tile = Main.tile[i, j];
@@ -57,19 +67,33 @@ namespace UnveiledMystery.Tiles.TileEntity
 
         public override void Update()
         {
+            if(!runOnce)
+            {
+                // Where the turret shouldn't shoot.
+                if (WorldGen.SolidOrSlopedTile(Position.X - 1, Position.Y))
+                    blockedDirection.Add(direction.LEFT);
+                if (WorldGen.SolidOrSlopedTile(Position.X + 1, Position.Y))
+                    blockedDirection.Add(direction.RIGHT);
+                if (WorldGen.SolidOrSlopedTile(Position.X, Position.Y-1))
+                    blockedDirection.Add(direction.UP);
+                if (WorldGen.SolidOrSlopedTile(Position.X, Position.Y+1))
+                    blockedDirection.Add(direction.DOWN);
+
+                runOnce = true;
+            }
             if(projectile == 0 || damage == 0)
             {
                 if (Main.tile[Position.X, Position.Y].TileType == tileTypes[0])
                 {
                     projectile = ProjectileID.WoodenArrowFriendly;
-                    damage = 30;
+                    damage = 50;
                     speed = 0.5f;
                     cadence = 120;
                 }
                 else if (Main.tile[Position.X, Position.Y].TileType == tileTypes[1])
                 {
                     projectile = ProjectileID.ExplosiveBullet;
-                    damage = 60;
+                    damage = 30;
                     speed = 1f;
                     cadence = 60;
                 }
@@ -92,6 +116,28 @@ namespace UnveiledMystery.Tiles.TileEntity
             {
                 if (Vector2.Distance(npc.Center, Position.ToWorldCoordinates()) <= TILEACTIVATIONRADIUS && npc.CanBeChasedBy())
                 {
+                    // If the enemy is behind the turret, the turret doesn't target him
+                    if(blockedDirection.Contains(direction.UP))
+                    {
+                        if (npc.Center.Y <= Position.ToWorldCoordinates().Y)
+                            continue;
+                    }
+                    if (blockedDirection.Contains(direction.DOWN))
+                    {
+                        if (npc.Center.Y >= Position.ToWorldCoordinates().Y)
+                            continue;
+                    }
+                    if (blockedDirection.Contains(direction.LEFT))
+                    {
+                        if (npc.Center.X <= Position.ToWorldCoordinates().X)
+                            continue;
+                    }
+                    if (blockedDirection.Contains(direction.RIGHT))
+                    {
+                        if (npc.Center.X >= Position.ToWorldCoordinates().X)
+                            continue;
+                    }
+
                     activated = true;
                     if(targetNPC == null || !targetNPC.active)
                         targetNPC = npc;
@@ -117,9 +163,9 @@ namespace UnveiledMystery.Tiles.TileEntity
                         Vector2 direction = (targetNPC.Center - Position.ToWorldCoordinates()) * speed;
 
                         if(projectile != ModContent.ProjectileType<AutomaticPlayerDartTrapHomingProjectile>())
-                            Projectile.NewProjectile(new EntitySource_TileEntity(this), Position.ToWorldCoordinates(), direction, projectile, damage, 5f, Main.myPlayer);
+                            Projectile.NewProjectile(new EntitySource_TileEntity(this), Position.ToWorldCoordinates(), direction, projectile, damage, 1f, Main.myPlayer);
                         else
-                            Projectile.NewProjectile(new EntitySource_TileEntity(this), Position.ToWorldCoordinates(), direction, projectile, damage, 5f, Main.myPlayer, targetNPC.whoAmI);
+                            Projectile.NewProjectile(new EntitySource_TileEntity(this), Position.ToWorldCoordinates(), direction, projectile, damage, 1f, Main.myPlayer, targetNPC.whoAmI);
 
                     }
                     timer = 0;
